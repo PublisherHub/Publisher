@@ -1,0 +1,21 @@
+{
+    "name": "jlueke/Publisher",
+    "description": "Library to publish multiple entries (at once).",
+    "keywords": ["oauth", "publish", "post"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jacqueline Lueken",
+            "email": "jac_lueken@live.de"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Publisher\\": "src/Publisher",
+            "Unit\\": "test/Unit"
+        }
+    }
+}

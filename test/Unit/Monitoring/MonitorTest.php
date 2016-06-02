@@ -9,30 +9,35 @@ class MonitorTest extends \PHPUnit_Framework_TestCase
     
     public function testConstructor()
     {
-        $monitor = new Monitor();
-        $this->assertEquals(array(), $monitor->getResults());
+        $monitor = new Monitor('PublisherMonitor');
+        $this->assertSame(array(), $monitor->getStatus());
+        
     }
     
-    public function testImportUpdatedResults()
+    public function testImportUpdatedStatus()
     {
-        $updatedResults = array(
+        $updatedStatus = array(
             'entry1' => true,
             'entry2' => false
         );
         
-        $monitor = new Monitor($updatedResults);
-        $this->assertEquals($updatedResults, $monitor->getResults());
+        $_SESSION['PublisherMonitor'] = $updatedStatus;
+        
+        $monitor = new Monitor('PublisherMonitor');
+        $this->assertEquals($updatedStatus, $monitor->getStatus());
     }
     
     public function testExecuted()
     {
-        $updatedResults = array(
+        $updatedStatus = array(
             'entry1' => true,
             'entry2' => false,
             'entry3' => null
         );
         
-        $monitor = new Monitor($updatedResults);
+        $_SESSION['PublisherMonitor'] = $updatedStatus;
+        
+        $monitor = new Monitor('PublisherMonitor');
         
         $this->assertTrue($monitor->executed('entry1'));
         
@@ -42,22 +47,22 @@ class MonitorTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @dataProvider getResult
+     * @dataProvider getStatus
      */
-    public function testToUpdateResults(bool $result)
+    public function testToUpdateStatus(bool $result)
     {
-        $monitor = new Monitor();
+        $monitor = new Monitor('PublisherMonitor');
         
         $monitor->monitor('entry');
-        $expectedResults = array('entry' => null);
-        $this->assertSame($expectedResults, $monitor->getResults());
+        $expectedStatus = array('entry' => null);
+        $this->assertSame($expectedStatus, $monitor->getStatus());
         
-        $monitor->setResult('entry', $result);
-        $results = $monitor->getResults();
-        $this->assertSame($result, $results['entry']);
+        $monitor->setStatus('entry', $result);
+        $status = $monitor->getStatus();
+        $this->assertSame($result, $status['entry']);
     }
     
-    public function getResult()
+    public function getStatus()
     {
         return array(
             array(true),
@@ -77,10 +82,10 @@ class MonitorTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Publisher\Monitoring\Exception\UnregisteredEntryException
      */
-    public function testFailToSetResultForUnregisteredEntry()
+    public function testFailToSetStatusForUnregisteredEntry()
     {
         $monitor = new Monitor();
-        $monitor->setResult('entry', true);
+        $monitor->setStatus('entry', true);
     }
     
 }

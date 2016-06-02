@@ -12,7 +12,7 @@ interface MonitoringInterface
      * 
      * @return void
      */
-    public function monitor($entryName);
+    public function monitor(string $entryName);
     
     /**
      * Marks the publishing as successful or failed.
@@ -24,7 +24,7 @@ interface MonitoringInterface
      * 
      * @return void
      */
-    public function setResult($entryName, bool $success);
+    public function setStatus(string $entryName, bool $success);
     
     /**
      * Returns whether or not the entry was executed and therefore got a result.
@@ -36,7 +36,14 @@ interface MonitoringInterface
      * 
      * @return bool
      */
-    public function executed($entryName);
+    public function executed(string $entryName);
+    
+    /**
+     * Returns true if every request was executed.
+     * 
+     * @return bool
+     */
+    public function finished();
     
     /**
      * Returns the outcome for each entry.
@@ -44,5 +51,11 @@ interface MonitoringInterface
      * 
      * @return array
      */
-    public function getResults();
+    public function getStatus();
+    
+    
+    /**
+     * @return void
+     */
+    public function clearStatus();
 }

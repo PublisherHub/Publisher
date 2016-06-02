@@ -3,13 +3,12 @@
 namespace Publisher\Entry\OAuth1;
 
 use Publisher\Entry\AbstractEntry;
-use Publisher\Entry\Interfaces\RecommendationInterface;
 use Publisher\Validator;
 
 /**
  * @link https://dev.xing.com/docs/post/groups/forums/:forum_id/posts
  */
-class XingForumEntry extends AbstractEntry implements RecommendationInterface
+class XingForumEntry extends AbstractEntry
 {
     
     const MAX_LENGTH_OF_MESSAGE = 420;
@@ -46,7 +45,16 @@ class XingForumEntry extends AbstractEntry implements RecommendationInterface
         
         Validator::validateMessageLength($body['content'], self::MAX_LENGTH_OF_MESSAGE);
     }
-
+    
+    // Implementation of MonitoredInterface
+    
+    public static function succeeded($response)
+    {
+        return false; // ######
+    }
+    
+    // Implementation of RecommendationInterface
+    
     public function setRecommendationParameters(
             $message,
             $title = '',
@@ -64,4 +72,5 @@ class XingForumEntry extends AbstractEntry implements RecommendationInterface
             $this->body['content'] .= "\n$date";
         }
     }
+    
 }

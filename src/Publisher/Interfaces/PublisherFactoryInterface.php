@@ -12,7 +12,7 @@ interface PublisherFactoryInterface
      * @param array $scopes
      * @return \Publisher\Interfaces\PublisherInterface
      */
-    public function getPublisher($serviceName, array $scopes = array());
+    public function getPublisher(string $serviceName, array $scopes = array());
     
     /**
      * @param EntryInterface $entry

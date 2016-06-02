@@ -18,32 +18,38 @@ abstract class AbstractPublishingManager
     protected $monitor;
     
     public function __construct(
-            array $data,
+            array $entryData,
             PublisherFactoryInterface $publisherFactory,
             Monitor $monitor
     ) {
         $this->entries = array();
-        $this->importEntries($data);
+        $this->importEntries($entryData);
         $this->publisherFactory = $publisherFactory;
         $this->monitor = $monitor;
+        if (empty($this->monitor->getStatus())) {
+            $this->initialiseMonitoring();
+        }
     }
     
     public function publishAll()
     {
-        
         foreach ($this->entries as $serviceEntryName => $content) {
             if (!$this->monitor->executed($serviceEntryName)) {
-                    $entry = EntryFactory::getEntry($serviceEntryName, $content);
-                    $this->fillEntry($entry, $content);
-                    $result = $this->publish($entry);
-                    $this->monitor->setResult($serviceEntryName, $entry::wasSuccessful($result));
+                $entry = EntryFactory::getEntry($serviceEntryName, $content);
+                $this->fillEntry($entry, $content);
+                $status = $this->publish($entry);
+                $this->monitor->setStatus($serviceEntryName, $entry::succeeded($status));
             }
+        }
+        if ($this->monitor->finished()) {
+            
+            $this->monitor->clearStatus();
         }
     }
     
-    public function getStatistics()
+    public function getStatus()
     {
-        return $this->monitor->getResults();
+        return $this->monitor->getStatus();
     }
     
     protected function importEntries(array $data)
@@ -54,7 +60,6 @@ abstract class AbstractPublishingManager
                 $this->entries[$entryName] = $content;
             }
         }
-        $this->initialiseMonitoring();
     }
     
     /**

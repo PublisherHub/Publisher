@@ -3,7 +3,6 @@
 namespace Publisher\Entry\OAuth2;
 
 use Publisher\Entry\OAuth2\AbstractEntry;
-use Publisher\Entry\Interfaces\RecommendationInterface;
 use Publisher\Validator;
 
 /**
@@ -11,7 +10,7 @@ use Publisher\Validator;
  * 
  * Even so the documentation says otherwise, it is possible to tag someone without giving a place.
  */
-class FacebookUserEntry extends AbstractEntry implements RecommendationInterface
+class FacebookUserEntry extends AbstractEntry
 {
     
     const MAX_LENGTH_OF_MESSAGE = 63205;
@@ -36,7 +35,15 @@ class FacebookUserEntry extends AbstractEntry implements RecommendationInterface
             Validator::validateMessageLength($body['message'], self::MAX_LENGTH_OF_MESSAGE);
         }
     }
-
+    
+    // Implementation of MonitoredInterface
+    
+    public static function succeeded($response)
+    {
+        $response = json_decode($response);
+        return (isset($response->id));
+    }
+    
     // Implementation of RecommendationInterface
     
     public function setRecommendationParameters(
@@ -57,6 +64,5 @@ class FacebookUserEntry extends AbstractEntry implements RecommendationInterface
             $this->body['message'] .= "\n".$date;
         }
     }
-    
 
 }

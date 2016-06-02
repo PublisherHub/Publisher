@@ -3,8 +3,10 @@
 namespace Publisher\Entry;
 
 use Publisher\Entry\EntryInterface;
+use Publisher\Entry\Interfaces\RecommendationInterface;
+use Publisher\Monitoring\MonitoredInterface;
 
-abstract class AbstractEntry implements EntryInterface
+abstract class AbstractEntry implements EntryInterface, RecommendationInterface, MonitoredInterface
 {
     
     const MAX_LENGTH_OF_MESSAGE = 0;

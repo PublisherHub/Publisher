@@ -3,13 +3,12 @@
 namespace Publisher\Entry\OAuth1;
 
 use Publisher\Entry\AbstractEntry;
-use Publisher\Entry\Interfaces\RecommendationInterface;
 use Publisher\Validator;
 
 /*
  * @link https://dev.twitter.com/rest/reference/post/statuses/update
  */
-class TwitterUserEntry extends AbstractEntry implements RecommendationInterface
+class TwitterUserEntry extends AbstractEntry
 {
     
     const MAX_LENGTH_OF_MESSAGE = 140;
@@ -19,7 +18,7 @@ class TwitterUserEntry extends AbstractEntry implements RecommendationInterface
         parent::__construct($parameters);
         $this->path = 'statuses/update.json';
         $this->method = 'POST';
-        $this->contentType = 'application/json';
+        $this->contentType = '';//'application/json';
     }
     
     protected function validateBody(array $body)
@@ -28,6 +27,13 @@ class TwitterUserEntry extends AbstractEntry implements RecommendationInterface
         Validator::validateMessageLength($body['status'], self::MAX_LENGTH_OF_MESSAGE);
     }
     
+    // Implementation of MonitoredInterface
+    
+    public static function succeeded($response)
+    {
+        $response = json_decode($response);
+        return (isset($response->id_str));
+    }
     
     // Implementation of RecommendationInterface
     
@@ -49,4 +55,5 @@ class TwitterUserEntry extends AbstractEntry implements RecommendationInterface
             $this->body['status'] .= "\n$date";
         }
     }
+
 }

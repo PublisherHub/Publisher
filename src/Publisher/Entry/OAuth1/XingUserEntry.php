@@ -3,7 +3,6 @@
 namespace Publisher\Entry\OAuth1;
 
 use Publisher\Entry\AbstractEntry;
-use Publisher\Entry\Interfaces\RecommendationInterface;
 use Publisher\Validator;
 
 /**
@@ -11,7 +10,7 @@ use Publisher\Validator;
  * 
  * Publish will return "Status update has been posted" it was successful.
  */
-class XingUserEntry extends AbstractEntry implements RecommendationInterface
+class XingUserEntry extends AbstractEntry
 {
     
     const MAX_LENGTH_OF_MESSAGE = 420;
@@ -22,13 +21,20 @@ class XingUserEntry extends AbstractEntry implements RecommendationInterface
         parent::__construct($body);
         $this->path = '/users/me/status_message';
         $this->method = 'POST';
-        $this->contentType = 'application/json';
+        $this->contentType = '';//'application/json';
     }
     
     protected function validateBody(array $body)
     {
         Validator::checkRequiredParameters($body, array('message'));
         Validator::validateMessageLength($body['message'], self::MAX_LENGTH_OF_MESSAGE);
+    }
+    
+    // Implementation of MonitoredInterface
+    
+    public static function succeeded($response)
+    {
+        return ($response === 'Status update has been posted');
     }
     
     // Implementation of RecommendationInterface
@@ -51,5 +57,5 @@ class XingUserEntry extends AbstractEntry implements RecommendationInterface
             $this->body['message'] .= "\n$date";
         }
     }
-
+    
 }

@@ -20,10 +20,10 @@ class EntryHelper
     
     public static function getServiceName(EntryInterface $entry)
     {
-         return preg_replace('/^(.+)(User|Forum|Group)Entry$/', "$1", $entry->getName());
+        return preg_replace('/^(.+)(User|Forum|Group)Entry$/', "$1", $entry->getName());
     }
     
-    public function getPublisherScopes(EntryInterface $entry)
+    public static function getPublisherScopes(EntryInterface $entry)
     {
         if ($entry instanceof \Publisher\Entry\OAuth2\EntryInterface) {
             return $entry::getPublisherScopes();

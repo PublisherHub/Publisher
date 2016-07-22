@@ -1,6 +1,6 @@
 {
-    "name": "jlueke/Publisher",
-    "description": "Library to publish multiple entries (at once).",
+    "name": "publisher/publisher",
+    "description": "Library to publish multiple entries (all at once).",
     "keywords": ["oauth", "publish", "post"],
     "license": "MIT",
     "authors": [
@@ -12,10 +12,20 @@
     "require": {
         "php": ">=5.3.0"
     },
+    "suggest": {
+        "jlueke/PHPOAuthLibPublisher": "An implementation of a PublisherFactory that uses lusutanian/oauth.",
+        "publisher/facebook-entry": "Adds entries for posting on Facebook.",
+        "publisher/twitter-entry": "Adds entries for posting on Twitter.",
+        "publisher/xing-entry": "Adds entries for posting on XING.",
+        "publisher/recommendation": "Adds mode for publishing."
+    },
     "autoload": {
         "psr-4": {
             "Publisher\\": "src/Publisher",
-            "Unit\\": "test/Unit"
+            "Unit\\": "tests/Unit",
+            "Publisher\\Entry\\Mock\\": "tests/Mock/Entry",
+            "Publisher\\Mode\\Mock\\": "tests/Mock/Mode"
+            
         }
     }
 }

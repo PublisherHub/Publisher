@@ -9,7 +9,7 @@
 >
         <testsuites>
             <testsuite name="Publisher Tests">
-                <directory>test</directory>
+                <directory>tests</directory>
             </testsuite>
         </testsuites>
         <filter>

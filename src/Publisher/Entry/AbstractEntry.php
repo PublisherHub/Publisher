@@ -3,56 +3,63 @@
 namespace Publisher\Entry;
 
 use Publisher\Entry\EntryInterface;
-use Publisher\Entry\Interfaces\RecommendationInterface;
 use Publisher\Monitoring\MonitoredInterface;
 
-abstract class AbstractEntry implements EntryInterface, RecommendationInterface, MonitoredInterface
+use Publisher\Requestor\Request;
+
+abstract class AbstractEntry implements EntryInterface, MonitoredInterface
 {
     
     const MAX_LENGTH_OF_MESSAGE = 0;
     
-    protected $path;
-    protected $method;
-    protected $contentType;
-    protected $body;
+    protected $request;
     
     public function __construct(array $parameters = array())
     {
-        $this->body = array();
+        $this->request = new Request();
+        $this->defineRequestProperties();
+        $this->setParameters($parameters);
     }
     
-    protected abstract function validateBody(array $body);
-    
-    // EntryInterface
-    public function getPath()
+    public static function getId()
     {
-        return $this->path;
+        $classname = get_called_class();
+        return preg_replace('/^.*\\\\([A-Za-z]+)Entry$/', "$1", $classname);
     }
     
-    public function getMethod()
+    public static function getServiceId()
     {
-        return $this->method;
+        return preg_replace(
+                '/^([A-Za-z]+)(User|Forum|Group|Page)$/',
+                "$1",
+                self::getId()
+        );
     }
     
-    public function getContentType()
+    public static function getPublisherScopes()
     {
-        return $this->contentType;
-    }
-    
-    public function getBody()
-    {
-        $this->validateBody($this->body);
-        return $this->body;
+        return array();
     }
     
     public function setBody(array $body)
     {
-        $this->body = $body;
+        $this->validateBody($body);
+        $this->request->setBody($body);
     }
     
-    public function getName()
+    public function getRequest()
     {
-        $classname = get_class($this);
-        return preg_replace('/^.*\\\\/', '', $classname);
+        return $this->request;
     }
+    
+    protected function setParameters(array $parameters)
+    {
+        // default
+    }
+    
+    // abstract methods
+    
+    protected abstract function defineRequestProperties();
+    
+    protected abstract function validateBody(array $body);
 }

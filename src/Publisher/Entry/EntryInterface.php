@@ -5,19 +5,26 @@ namespace Publisher\Entry;
 interface EntryInterface
 {
     
-    public function getPath();
+    /**
+     * @return String classname of Entry
+     */
+    public static function getId();
     
-    public function getMethod();
+    /**
+     * @return String corresponding service id
+     */
+    public static function getServiceId();
     
-    public function getContentType();
-    
-    public function getBody();
+    /**
+     * @return array
+     */
+    public static function getPublisherScopes();
     
     public function setBody(array $body);
     
     /**
-     * @return String classname of Entry
+     * @return \Publisher\Requestor\Request
      */
-    public function getName();
+    public function getRequest();
     
 }

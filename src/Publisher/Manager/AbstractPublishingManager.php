@@ -8,6 +8,7 @@ use Publisher\Monitoring\Monitor;
 use Publisher\Entry\EntryInterface;
 use Publisher\Helper\EntryHelperInterface;
 use Publisher\Entry\Factory\EntryFactoryInterface;
+use Publisher\Mode\Exception\InterfaceRequiredException;
 
 abstract class AbstractPublishingManager implements PublishingManagerInterface
 {
@@ -102,8 +103,11 @@ abstract class AbstractPublishingManager implements PublishingManagerInterface
     protected abstract function validateContent(array $content);
     
     protected abstract function fillEntry(EntryInterface $entry, array $content);
+    
     /**
      * @return string
+     * 
+     * @throws InterfaceRequiredException
      */
     protected abstract function publish(EntryInterface $entry);
     

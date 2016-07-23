@@ -12,7 +12,9 @@ class Validator
     static function validateMessageLength($message, $maxLength)
     {
         if (mb_strlen($message) > $maxLength) {
-            throw new LengthException("The maximum length is $maxLength characters.");
+            throw new LengthException(
+                    "The maximum length is $maxLength characters."
+            );
         }
     }
     
@@ -26,7 +28,9 @@ class Validator
     {
         foreach ($required as $key) {
             if (empty($given[$key])) {
-                throw new MissingRequiredParameterException("Missing required parameter '$key'");
+                throw new MissingRequiredParameterException(
+                        "Missing required parameter '$key'"
+                );
             }
         }
     }
@@ -48,7 +52,9 @@ class Validator
             }
             
             $parameters = implode(', ', $required);
-            throw new MissingRequiredParameterException("At least one parameter required: $parameters");
+            throw new MissingRequiredParameterException(
+                    "At least one parameter required: $parameters"
+            );
             
         } catch (RequiredParameterFound $ex) {
             // we have one required parameter, thats all we need
@@ -65,7 +71,9 @@ class Validator
     {
         foreach ($required as $key) {
             if (!isset($given[$key])) {
-                throw new MissingRequiredParameterException("Missing required parameter '$key'");
+                throw new MissingRequiredParameterException(
+                        "Missing required parameter '$key'"
+                );
             }
         }
     }
@@ -74,7 +82,9 @@ class Validator
     {
         if (!in_array($given, $allowed)) {
             $allowed = implode(', ', $allowed);
-            throw new ValueException("Allowed values: $allowed given value: $given");
+            throw new ValueException(
+                    "Allowed values: $allowed given value: $given"
+            );
         }
     }
 }

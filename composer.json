@@ -13,7 +13,7 @@
         "php": ">=5.3.0"
     },
     "suggest": {
-        "jlueke/PHPOAuthLibPublisher": "An implementation of a PublisherFactory that uses lusutanian/oauth.",
+        "phpoauthlib/requestor": "An implementation of a RequestorFactory that uses lusutanian/oauth.",
         "publisher/facebook-entry": "Adds entries for posting on Facebook.",
         "publisher/twitter-entry": "Adds entries for posting on Twitter.",
         "publisher/xing-entry": "Adds entries for posting on XING.",

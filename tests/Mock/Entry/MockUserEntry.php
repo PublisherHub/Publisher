@@ -2,34 +2,31 @@
 
 namespace Publisher\Entry\Mock;
 
-use Publisher\Entry\EntryInterface;
+use Publisher\Entry\AbstractEntry;
+use Publisher\Helper\Validator;
 
-class MockUserEntry implements EntryInterface
+class MockUserEntry extends AbstractEntry
 {
     
-    public static function getPublisherScopes()
-    {
-        return array();
-    }
+    const MAX_LENGTH_OF_MESSAGE = 42; 
     
-    public static function getId()
+    protected function defineRequestProperties()
     {
-        return 'MockUser';
-    }
-    
-    public static function getServiceId()
-    {
-        return 'Mock';
+        $this->request->setPath('/me/feed');
+        $this->request->setMethod('POST');
     }
 
-    public function getRequest()
+    protected function validateBody(array $body)
+    {
+        Validator::checkRequiredParametersAreSet($body, array('message'));
+        if (isset($body['message'])) {
+            Validator::validateMessageLength($body['message'], self::MAX_LENGTH_OF_MESSAGE);
+        }
+    }
+
+    public static function succeeded($response)
     {
         
     }
-
-    public function setBody(array $body)
-    {
-        
-    }
-
+    
 }

@@ -37,9 +37,9 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         
         $exception = null;
         try {
-            Validator::checkRequiredParameters($given, $required);
+            Validator::checkRequiredParametersAreSet($given, $required);
             $required[] = 'bar';
-            Validator::checkRequiredParameters($given, $required);
+            Validator::checkRequiredParametersAreSet($given, $required);
         } catch (MissingRequiredParameterException $exception) {}
         
         $this->assertNull($exception);
@@ -54,7 +54,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $required = array('foo', 'bar');
         
-        Validator::checkRequiredParameters($given, $required);
+        Validator::checkRequiredParametersAreSet($given, $required);
     }
     
     public function getNotAllRequiredParameters()
@@ -92,7 +92,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @dataProvider getNoRequiredParameters
+     * @dataProvider getNotRequiredParameters
      * 
      * @expectedException \Publisher\Helper\Exception\MissingRequiredParameterException
      */
@@ -103,12 +103,31 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         Validator::checkAnyRequiredParameter($given, $required);
     }
     
-    public function getNoRequiredParameters()
+    public function getNotRequiredParameters()
     {
         return array(
             array(array()),
             array(array('anotherParameter' => 'value'))
         );
+    }
+    
+    public function testCheckRequiredParameters()
+    {
+        $required = array('foo', 'bar');
+        $given = array('foo' => '', 'bar' => null);
+        
+        Validator::checkRequiredParameters($given, $required);
+    }
+    
+    /**
+     * @expectedException \Publisher\Helper\Exception\MissingRequiredParameterException
+     */
+    public function testMissingRequiredParameter()
+    {
+        $required = array('foo', 'bar');
+        $given = array();
+        
+        Validator::checkRequiredParameters($given, $required);
     }
     
     public function testValidValue()
@@ -134,4 +153,5 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         
         Validator::validateValue($given, $allowed);
     }
+    
 }

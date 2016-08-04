@@ -3,6 +3,7 @@
 namespace Unit\Publisher\Selector\Manager;
 
 use Publisher\Selector\Manager\SelectorManager;
+use Publisher\Selector\Factory\SelectorFactoryInterface;
 use Publisher\Selector\Selection;
 
 class SelectorManagerTest extends \PHPUnit_Framework_TestCase
@@ -15,9 +16,9 @@ class SelectorManagerTest extends \PHPUnit_Framework_TestCase
             'ServicePage' => $this->getSelectorsThatUpdateParameters()
         ); 
         
-        $selectorManager = new SelectorManager(
-                array_keys($this->selectors),
-                $this->getSelectorFactory()
+        $selectorManager = $this->getSelectorManager(
+                $this->getSelectorFactory(),
+                array_keys($this->selectors)
         );
         
         $choices = array(
@@ -46,9 +47,9 @@ class SelectorManagerTest extends \PHPUnit_Framework_TestCase
             'ServicePage' => $this->getSelectorThatHasSelections($selections2)
         );
         
-        $selectorManager = new SelectorManager(
-                array_keys($this->selectors),
-                $this->getSelectorFactory()
+        $selectorManager = $this->getSelectorManager(
+                $this->getSelectorFactory(),
+                array_keys($this->selectors)
         );
         
         $allSelections = array(
@@ -75,9 +76,9 @@ class SelectorManagerTest extends \PHPUnit_Framework_TestCase
             'ServicePage' => $this->getSelectorThatHasSelections($selections2)
         );
         
-        $selectorManager = new SelectorManager(
-                array_keys($this->selectors),
-                $this->getSelectorFactory()
+        $selectorManager = $this->getSelectorManager(
+                $this->getSelectorFactory(),
+                array_keys($this->selectors)
         );
         
         $allSelectionsAsArray = array(
@@ -116,6 +117,16 @@ class SelectorManagerTest extends \PHPUnit_Framework_TestCase
         );
         
         return array(array($selections1, $selections2));
+    }
+    
+    protected function getSelectorManager(
+            SelectorFactoryInterface $selectorFactory,
+            array $entryIds
+    ) {
+        $selectorManager = new SelectorManager($selectorFactory);
+        $selectorManager->setupSelectors($entryIds);
+        
+        return $selectorManager;
     }
     
     protected function getSelectorsThatUpdateParameters()

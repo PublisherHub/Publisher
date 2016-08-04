@@ -33,7 +33,7 @@ class PublisherSupervisorCheckConfigTest extends \PHPUnit_Framework_TestCase
         $notFound = array(
             'entries' => array('\\Publisher\\Entry\\Mock\\MockForumEntry'),
             'modes' => array(
-                '\\Publisher\\Mode\\MockText\\MockTextManager',
+                '\\Publisher\\Mode\\MockText\\MockTextMode',
                 '\\Publisher\\Mode\\MockText\\MockTextInterface'
             )
         );
@@ -43,7 +43,7 @@ class PublisherSupervisorCheckConfigTest extends \PHPUnit_Framework_TestCase
                 'Mock' => array('Forum') // MockForumEntry doesn't exists
             ),
             'modes' => array(
-                'MockText' // MockTextManager, MockTextInterface doesn't exists
+                'MockText' // MockTextMode, MockTextInterface doesn't exists
             )
         );
         

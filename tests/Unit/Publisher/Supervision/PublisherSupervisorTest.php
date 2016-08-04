@@ -10,7 +10,7 @@ class PublisherSupervisorTest extends \PHPUnit_Framework_TestCase
     protected $config;
     protected $supervisor;
     
-    public function __construct()
+    public function __construct($name = NULL, array $data = array(), $dataName = '')
     {
         $this->config = array(
             'entryIds' => array(
@@ -22,12 +22,34 @@ class PublisherSupervisorTest extends \PHPUnit_Framework_TestCase
                 'Recommendation'
             )
         );
+        
+        parent::__construct($name, $data, $dataName);
     }
     
     public function setUp()
     {
         $this->supervisor = new PublisherSupervisor($this->config);
     }
+    
+    /**
+     * @dataProvider getServiceWithEntryIds
+     * 
+     * @param string $service
+     * @param array $entryIds
+     */
+    public function testGetEntryIds(string $service, array $entryIds)
+    {
+        $this->assertEquals($entryIds, $this->supervisor->getEntryIds($service));
+    }
+    
+    public function getServiceWithEntryIds()
+    {
+        return array(
+            array('Facebook', array('FacebookUser', 'FacebookPage')),
+            array('Service', array())
+        );
+    }
+    
     
     public function testGetServices()
     {

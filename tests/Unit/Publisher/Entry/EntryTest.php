@@ -6,14 +6,14 @@ abstract class EntryTest extends \PHPUnit_Framework_TestCase
 {
     protected function getEntry(array $body = array(), array $parameters = array())
     {
-        $entryName = $this->getEntryName();
+        $entryName = $this->getEntryClass();
         $entry =  new $entryName($parameters);
         $entry->setBody($body);
         
         return $entry;
     }
     
-    protected abstract function getEntryName();
+    protected abstract function getEntryClass();
     
     public abstract function getValidBody();
     
@@ -60,7 +60,7 @@ abstract class EntryTest extends \PHPUnit_Framework_TestCase
     
     protected function getExceededMessage()
     {
-        $entryName = $this->getEntryName();
+        $entryName = $this->getEntryClass();
         
         $maxLength = $entryName::MAX_LENGTH_OF_MESSAGE;
         $message = '';

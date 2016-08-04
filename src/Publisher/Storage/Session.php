@@ -71,11 +71,7 @@ class Session implements StorageInterface
      */
     public function clearAll()
     {
-        $clients = array_keys($this->session->get($this->sessionKey));
-        
-        foreach ($clients as $client) {
-            $this->clear($client);
-        }
+        $this->session->remove($this->sessionKey);
     }
     
     protected function hasClientStorage(string $clientId)

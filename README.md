@@ -48,11 +48,11 @@ Examples of basic usage are located in the examples/ directory.
 
 # Conventions
 
-EntyNamespace:   Publisher\Entry\[ServiceId]
-EntryClassNames: [ServiceId](User|Page|Group|Forum)Entry
+EntyNamespace:   Publisher\Entry\ServiceId
+EntryClassNames: ServiceId(User|Page|Group|Forum)Entry
 
-SelectorNamespace:  Publisher\Entry\[ServiceId]\Selector
-SelectorClassNames: [ServiceId](User|Page|Group|Forum)Selector
+SelectorNamespace:  Publisher\Entry\ServiceId\Selector
+SelectorClassNames: ServiceId(User|Page|Group|Forum)Selector
 
 The Selector should be matching with the id of the Entry that it belongs to.
 If their is no Selector needed, then their is no need to implement one.
@@ -60,8 +60,8 @@ But you should add the 'Selector' directory nonetheless.
 
 
 ModeNamespace:   Publisher\Mode\ModeId
-InterfaceClass: [ModeId]Interface
-ModeClass:      [ModeId]Mode
+InterfaceClass: ModeIdInterface
+ModeClass:      ModeIdMode
 
 
 It is recommended to follow these conventions.

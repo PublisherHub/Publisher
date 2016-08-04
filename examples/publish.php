@@ -17,7 +17,7 @@ var_dump($notFoundClasses);
 $entryHelper = new EntryHelper($supervisor);
 $entryFactory = new EntryFactory($entryHelper);
 $session = new \Symfony\Component\HttpFoundation\Session\Session();
-$monitor = new Monitor($session);
+$monitor = Monitor::getInstance($session);
 
 $publisher = new Publisher(
         $entryHelper,

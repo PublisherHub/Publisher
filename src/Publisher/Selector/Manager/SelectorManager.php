@@ -2,30 +2,59 @@
 
 namespace Publisher\Selector\Manager;
 
+use Publisher\Selector\Manager\SelectorManagerInterface;
 use Publisher\Selector\Factory\SelectorFactoryInterface;
 use Publisher\Selector\Selection;
 
-class SelectorManager
+class SelectorManager implements SelectorManagerInterface
 {
     
     protected $selectors;
     protected $selectorFactory;
     
-    public function __construct(
-            array $entryIds,
-            SelectorFactoryInterface $selectorFactory
-    ) {
+    public function __construct(SelectorFactoryInterface $selectorFactory)
+    {
         $this->selectorFactory = $selectorFactory;
+    }
+    
+    /**
+     * @{inheritdoc}
+     */
+    public function setupSelectors(array $entryIds)
+    {
         $this->createSelectors($entryIds);
     }
     
+    /**
+     * @{inheritdoc}
+     */
+    public function areAllParametersSet()
+    {
+        $selectors = array_keys($this->selectors);
+        
+        foreach ($selectors as $entryId) {
+            if ($this->selectors[$entryId]->isParameterMissing()) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    /**
+     * @{inheritdoc}
+     */
     public function updateSelectors(array $choices)
     {
         $selectors = array_keys($this->selectors);
         foreach ($selectors as $entryId) {
             if (isset($choices[$entryId]) && is_array($choices[$entryId])) {
-                $this->selectors[$entryId]->updateParameters($choices[$entryId]);
+                $updateData = $choices[$entryId];
+            } else {
+                $updateData = array();
             }
+            $this->selectors[$entryId]->updateParameters($updateData);
+            
         }
     }
     
@@ -58,6 +87,29 @@ class SelectorManager
         return $return;
     }
     
+    /**
+     * @{inheritdoc}
+     */
+    public function getParameters()
+    {
+        $parameters = array();
+        
+        $selectors = array_keys($this->selectors);
+        foreach ($selectors as $entryId) {
+            $parameters[$entryId] = $this->selectors[$entryId]->getParameters();
+        }
+        
+        return $parameters;
+    }
+    
+    protected function createSelectors(array $entryIds)
+    {
+        $this->selectors = array();
+        foreach ($entryIds as $entryId) {
+            $this->selectors[$entryId] = $this->selectorFactory->create($entryId);
+        }
+    }
+    
     protected function convertSelectionsToArray(array $selections)
     {
         $return = array();
@@ -75,14 +127,6 @@ class SelectorManager
             'name' => $selection->getName(),
             'choices' => $selection->getChoices()
         );
-    }
-    
-    protected function createSelectors(array $entryIds)
-    {
-        $this->selectors = array();
-        foreach ($entryIds as $entryId) {
-            $this->selectors[$entryId] = $this->selectorFactory->create($entryId);
-        }
     }
     
 }

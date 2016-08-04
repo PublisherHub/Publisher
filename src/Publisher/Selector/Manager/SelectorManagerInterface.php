@@ -6,6 +6,23 @@ interface SelectorManagerInterface
 {
     
     /**
+     * Creates a selector for each $entryIds
+     * that will be used afterwards.
+     * 
+     * @param array $entryIds
+     * 
+     * @return void
+     */
+    public function setupSelectors(array $entryIds);
+    
+    /**
+     * Returns whether or not the selectors collected all required parameters. 
+     * 
+     * @returns bool
+     */
+    public function areAllParametersSet();
+    
+    /**
      * Update each selector with $choices['selector'].
      * 
      * Example:
@@ -57,6 +74,24 @@ interface SelectorManagerInterface
      * @return array
      */
     public function getSelectionsAsArray();
+    
+    /**
+     * Returns the parameters of all selectors.
+     * 
+     * Example:
+     * $parameters = array(
+     *  'ServiceUser' => array(), // no parameters for ServiceUserEntry
+     *  'ServicePage' => array(
+     *      'firstParameter' => '1', 'secondParameter' => 'b'
+     *  ),
+     *  'ServiceGroup' => array(
+     *      'firstParameter' => 'f'
+     *  )
+     * );
+     * 
+     * @return array
+     */
+    public function getParameters();
     
 }
 

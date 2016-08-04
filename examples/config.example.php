@@ -1,6 +1,6 @@
 <?php
 
-$config = array(
+$publisherConfig = array(
     'entryIds' => array(
         'Facebook' => array('User', 'Page'),
         'Twitter' => array('User'),

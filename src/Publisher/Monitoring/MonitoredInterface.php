@@ -7,10 +7,10 @@ interface MonitoredInterface
     
     /**
      * Monitored objects give feedback wheter or not an operation,
-     * call or request was successful based on the outcome ($result).
+     * call or request was successful based on the $response.
      * 
      * @return bool
      */
-    public static function succeeded($result);
+    public static function succeeded($response);
     
 }

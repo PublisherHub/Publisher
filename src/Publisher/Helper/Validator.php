@@ -9,7 +9,18 @@ use Publisher\Helper\Exception\ValueException;
 
 class Validator
 {
-    static function validateMessageLength($message, $maxLength)
+    
+    /**
+     * Validates if the lenght of $message lies between zero to $maxLength.
+     * 
+     * @param string $message
+     * @param int $maxLength
+     * 
+     * @return void
+     * 
+     * @throws LengthException
+     */
+    static function validateMessageLength(string $message, int $maxLength)
     {
         if (mb_strlen($message) > $maxLength) {
             throw new LengthException(
@@ -24,7 +35,7 @@ class Validator
      * @param array $given
      * @param array $required contains required keys
      */
-    static function checkRequiredParameters(array $given, array $required)
+    static function checkRequiredParametersAreSet(array $given, array $required)
     {
         foreach ($required as $key) {
             if (empty($given[$key])) {
@@ -62,15 +73,19 @@ class Validator
     }
     
     /**
-     * Validates if all required parameters are set.
+     * Validates if all required parameters are present.
      * 
      * @param array $given
      * @param array $required contains required keys
+     * 
+     * @throws MissingRequiredParameterException
+     * 
+     * @return void
      */
-    static function checkRequiredParametersAreSet(array $given, array $required)
+    static function checkRequiredParameters(array $given, array $required)
     {
         foreach ($required as $key) {
-            if (!isset($given[$key])) {
+            if (!array_key_exists($key, $given)) {
                 throw new MissingRequiredParameterException(
                         "Missing required parameter '$key'"
                 );
@@ -78,6 +93,16 @@ class Validator
         }
     }
     
+    /**
+     * Validates if $given has one of the allowed values of $allowd.
+     * 
+     * @param mixed $given
+     * @param array $allowed
+     * 
+     * @return void
+     * 
+     * @throws ValueException
+     */
     static function validateValue($given, array $allowed)
     {
         if (!in_array($given, $allowed)) {

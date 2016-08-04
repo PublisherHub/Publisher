@@ -2,7 +2,7 @@
 <html lang="en">
  <head>
   <meta charset="UTF-8">
-  <title>Dashboard for /srv/www/default/project/Publisher/src/Publisher/Entry/Exception</title>
+  <title>Dashboard for /srv/www/default/project/Publisher/src/Publisher/Mode/Exception</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="../../css/bootstrap.min.css" rel="stylesheet">
   <link href="../../css/nv.d3.min.css" rel="stylesheet">
@@ -19,7 +19,7 @@
      <div class="col-md-12">
       <ol class="breadcrumb">
         <li><a href="../../index.html">/srv/www/default/project/Publisher/src/Publisher</a></li>
-        <li><a href="../index.html">Entry</a></li>
+        <li><a href="../index.html">Mode</a></li>
         <li><a href="index.html">Exception</a></li>
         <li class="active">(Dashboard)</li>
 
@@ -159,7 +159,7 @@ $(document).ready(function() {
       .yAxis.tickFormat(d3.format('d'));
 
     d3.select('#classCoverageDistribution svg')
-      .datum(getCoverageDistributionData([0,0,0,0,0,0,0,0,0,0,0,1], "Class Coverage"))
+      .datum(getCoverageDistributionData([0,0,0,0,0,0,0,0,0,0,0,2], "Class Coverage"))
       .transition().duration(500).call(chart);
 
     nv.utils.windowResize(chart.update);
@@ -227,7 +227,7 @@ $(document).ready(function() {
     chart.yAxis.axisLabel('Cyclomatic Complexity');
 
     d3.select('#classComplexity svg')
-      .datum(getComplexityData([[100,0,"<a href=\"EntryNotFoundException.php.html#5\">EntryNotFoundException<\/a>"]], 'Class Complexity'))
+      .datum(getComplexityData([[100,0,"<a href=\"InterfaceRequiredException.php.html#5\">InterfaceRequiredException<\/a>"],[100,0,"<a href=\"ModeNotFoundException.php.html#5\">ModeNotFoundException<\/a>"]], 'Class Complexity'))
       .transition()
       .duration(500)
       .call(chart);

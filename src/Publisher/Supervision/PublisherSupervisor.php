@@ -3,8 +3,7 @@
 namespace Publisher\Supervision;
 
 use Publisher\Supervision\PublisherSupervisorInterface;
-use Publisher\Helper\EntryHelperInterface;
-
+use Publisher\Helper\BaseEntryHelperInterface;
 use Publisher\Entry\Exception\EntryNotFoundException;
 
 /**
@@ -15,11 +14,14 @@ use Publisher\Entry\Exception\EntryNotFoundException;
  * 
  * If you want to add more 
  */
-class PublisherSupervisor implements PublisherSupervisorInterface, EntryHelperInterface
+class PublisherSupervisor implements
+    PublisherSupervisorInterface,
+    BaseEntryHelperInterface
 {
     
     const ENTRY_NAMESPACE = '\\Publisher\\Entry\\';
     const MODE_NAMESPACE = '\\Publisher\\Mode\\';
+    const SERVICE_PATTERN = '/^([A-Za-z]+)(User|Forum|Group|Page)$/';
     
     protected $config;
     
@@ -27,7 +29,9 @@ class PublisherSupervisor implements PublisherSupervisorInterface, EntryHelperIn
     {
         $this->config = $config;
     }
-
+    
+    // implementation of PublisherSupervisorInterface
+    
     public function checkConfig()
     {
         $notFound = array();
@@ -80,7 +84,7 @@ class PublisherSupervisor implements PublisherSupervisorInterface, EntryHelperIn
         $classes = array();
         foreach ($modes as $mode) {
             $interfaces[] = self::MODE_NAMESPACE.$mode.'\\'.$mode.'Interface';
-            $classes[] = self::MODE_NAMESPACE.$mode.'\\'.$mode.'Manager';
+            $classes[] = self::MODE_NAMESPACE.$mode.'\\'.$mode.'Mode';
         }
         
         $notFound = $this->checkExists($classes);
@@ -88,6 +92,15 @@ class PublisherSupervisor implements PublisherSupervisorInterface, EntryHelperIn
         return array_merge($notFound, $this->checkExists($interfaces, 'interface'));
     }
     
+    /**
+     * Returns the classes or interfaces stored in $names
+     * that couldn't be found. 
+     * 
+     * @param array $names classes or interfaces
+     * @param string $type 'class' or 'interface'
+     * 
+     * @return array
+     */
     protected function checkExists(array $names, string $type = 'class')
     {
         $notFound = array();
@@ -102,41 +115,46 @@ class PublisherSupervisor implements PublisherSupervisorInterface, EntryHelperIn
         return $notFound;
     }
     
-    // implementation of EntryHelper
+    // implementation of BaseEntryHelperInterface
     
     public function getServiceId(string $entryId)
     {
-        $serviceId =  preg_replace(
-            '/^([A-Za-z]+)(User|Forum|Group|Page)$/',
-            "$1",
-            $entryId
-        );
+        $serviceId = preg_replace(self::SERVICE_PATTERN, "$1", $entryId);
         
-        if (is_null($serviceId) || $serviceId === $entryId) {
-            throw new EntryNotFoundException("'{$entryId}' is no valid entry id.");
-        } else {
+        $servicesIds = $this->getServices();
+        
+        if (in_array($serviceId, $servicesIds)) {
             return $serviceId;
+        } elseif (is_null($serviceId) || $serviceId === $entryId) {
+            $message = "'{$entryId}' is no valid entry id.";
+        } else {
+            $message = "'{$entryId}' is not configured.";
         }
+        throw new EntryNotFoundException($message);
     }
     
-    public function checkIsEntryId(string $entryId)
+    /**
+     * Returns all available entry ids of $service.
+     * 
+     * @param string $serviceId
+     * @return array
+     */
+    public function getEntryIds(string $serviceId)
     {
-        $serviceId = $this->getServiceId($entryId);
-        $entryIds = $this->getEntryIds(
-                $serviceId,
-                $this->config['entryIds'][$serviceId]
-        );
-        
-        if (!in_array($entryId, $entryIds)) {
-            throw new EntryNotFoundException("$entryId is not configured.");
+        if (isset($this->config['entryIds'][$serviceId])) {
+            
+            $subTypes = $this->config['entryIds'][$serviceId];
+            $entryIds = array();
+            foreach ($subTypes as $subType) {
+                $entryIds[] = $serviceId.$subType;
+            }
+            
+            return $entryIds;
+            
+        } else {
+            
+            return array();
         }
-    }
-    
-    public function getPublisherScopes(string $entryId)
-    {
-        $class = $this->getEntryClass($entryId);
-        
-        return $class::getPublisherScopes();
     }
     
     public function getEntryClass(string $entryId)
@@ -149,14 +167,13 @@ class PublisherSupervisor implements PublisherSupervisorInterface, EntryHelperIn
         return $this->getClass($entryId, 'Selector', '\\Selector\\');
     }
     
-    protected function getEntryIds(string $service, array $subTypes)
+    public function getModeClass(string $modeId)
     {
-        $entryIds = array();
-        foreach ($subTypes as $subType) {
-            $entryIds[] = $service.$subType;
-        }
+        $class = self::MODE_NAMESPACE.$modeId.'\\'.$modeId.'Mode';
         
-        return $entryIds;
+        $this->checkClassExists($class, 'Mode');
+        
+        return $class;
     }
     
     protected function getClass(
@@ -182,4 +199,5 @@ class PublisherSupervisor implements PublisherSupervisorInterface, EntryHelperIn
             throw new $exceptionClass("Unknown $type: $class");
         }
     }
+    
 }

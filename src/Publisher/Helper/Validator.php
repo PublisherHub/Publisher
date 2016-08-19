@@ -112,4 +112,55 @@ class Validator
             );
         }
     }
+    
+    /**
+     * Returns true if the schedule is valid,
+     * false if it is outside the intervall
+     * or null if it is neither an instance of \DateTime
+     * nor an timestamp.
+     * 
+     * @param \DateTime $scheduledDate
+     * @param string $minIntervallPattern
+     * @param string $maxIntervallPattern
+     * @return mixed
+     */
+    static function getScheduleValidation(
+        $scheduledDate,
+        string $minIntervallPattern,
+        string $maxIntervallPattern
+    ) {
+        if (is_int($scheduledDate)) {
+            $date = new \DateTime();
+            $date->setTimestamp($scheduledDate);
+            return Validator::isValidSchedule(
+                $date,
+                $minIntervallPattern,
+                $maxIntervallPattern
+            );
+            
+        } elseif (is_object($scheduledDate) && $scheduledDate instanceof \DateTime) {
+            return Validator::isValidSchedule(
+                $scheduledDate,
+                $minIntervallPattern,
+                $maxIntervallPattern
+            );
+            
+        } else {
+            return null;
+        }
+    }
+    
+    static function isValidSchedule(
+        \DateTime $scheduledDate,
+        string $minIntervallPattern,
+        string $maxIntervallPattern
+    ) {
+        $max = new \DateTime("now");
+        $min = new \DateTime("now");
+        
+        $max->add(new \DateInterval($maxIntervallPattern));
+        $min->add(new \DateInterval($minIntervallPattern));
+        
+        return !(($scheduledDate < $min) || ($scheduledDate > $max));
+    }
 }

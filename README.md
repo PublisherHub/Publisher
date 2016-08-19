@@ -42,26 +42,69 @@ $ php composer.phar install
     - publisher/recommendation -> adds mode for publishing
 - Requestor
     - phpoauthlib/requestor -> an implementation of a RequestorFactory that uses lusitanian/oauth
+- other
+    - publisher/form-bundle -> offers forms, views and translations for the publishing process
+    - publisher/publisher-symfony-bundle -> add publisher to your Symfony app
+    - publisher/publisher-silex-bundle -> add publisher to your Silex app
 
 # Examples
 Examples of basic usage are located in the examples/ directory.
 
-# Conventions
 
-EntyNamespace:   Publisher\Entry\ServiceId
-EntryClassNames: ServiceId(User|Page|Group|Forum)Entry
+# Development
 
-SelectorNamespace:  Publisher\Entry\ServiceId\Selector
-SelectorClassNames: ServiceId(User|Page|Group|Forum)Selector
+## Package structure (namespaces)
+Szenario:
+A Service called 'Foo' offers to post a status and to post in groups that the user is a member of.
+The Entries of this package implement the two Modes 'Recommendation' and 'SimpleMessage'.
+
+FooEntry:
+- Entity
+    - Mode
+        - Recommendation
+            - FooUserRecommendation.php
+            - FooGroupRecommendation.php
+        - SimpleMessage
+            - FooUserSimpleMessage.php
+            - FooGroupSimpleMessage.php
+- Selector
+    - FooGroupSelector.php
+- FooUserEntry.php
+- FooGroupEntry.php
+            
+
+Recommendation:
+- Entity
+    - AbstractRecommendation.php
+- Form
+    - Type
+        RecommendationType.php
+- Resources
+    - translations
+    - views
+- RecommendationInterface.php
+- RecommendationMode.php
+
+Modes should provide a Form and an Entity for validation.
+Entries that implement a Mode should implement the abstract entity given by the Mode.
+
+
+## Conventions
+
+- EntyNamespace:   Publisher\Entry\ServiceId
+- EntryClassNames: ServiceId(User|Page|Group|Forum)Entry
+
+- SelectorNamespace:  Publisher\Entry\ServiceId\Selector
+- SelectorClassNames: ServiceId(User|Page|Group|Forum)Selector
 
 The Selector should be matching with the id of the Entry that it belongs to.
 If their is no Selector needed, then their is no need to implement one.
 But you should add the 'Selector' directory nonetheless.
 
 
-ModeNamespace:   Publisher\Mode\ModeId
-InterfaceClass: ModeIdInterface
-ModeClass:      ModeIdMode
+- ModeNamespace:  Publisher\Mode\ModeId
+- InterfaceClass: ModeIdInterface
+- ModeClass:      ModeIdMode
 
 
 It is recommended to follow these conventions.

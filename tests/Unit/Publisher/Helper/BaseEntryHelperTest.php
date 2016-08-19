@@ -14,7 +14,7 @@ abstract class BaseEntryHelperTest extends \PHPUnit_Framework_TestCase
     public function __construct($name = NULL, array $data = array(), $dataName = '')
     {
         $this->config = array(
-            'entryIds' => array(
+            'entries' => array(
                 'Facebook' => array('User', 'Page'),
                 'Twitter' => array('User'),
                 'Xing' => array('User', 'Forum')
@@ -48,7 +48,7 @@ abstract class BaseEntryHelperTest extends \PHPUnit_Framework_TestCase
     
     public function testGetEntryClass()
     {
-        $this->config['entryIds']['Mock'] = array('User');
+        $this->config['entries']['Mock'] = array('User');
         $this->entryHelper = $this->getEntryHelper($this->config);
         $entryClass = '\\Publisher\\Entry\\Mock\\MockUserEntry';
         
@@ -60,7 +60,7 @@ abstract class BaseEntryHelperTest extends \PHPUnit_Framework_TestCase
     
     public function testGetSelectorClass()
     {
-        $this->config['entryIds']['Mock'] = array('Page');
+        $this->config['entries']['Mock'] = array('Page');
         $this->entryHelper = $this->getEntryHelper($this->config);
         $selectorClass = '\\Publisher\\Entry\\Mock\\Selector\\MockPageSelector';
         
@@ -75,7 +75,7 @@ abstract class BaseEntryHelperTest extends \PHPUnit_Framework_TestCase
      */
     public function testSelectorNotFound()
     {
-        $this->config['entryIds']['Mock'] = array('User');
+        $this->config['entries']['Mock'] = array('User');
         $this->entryHelper = $this->getEntryHelper($this->config);
         
         $selectorClass = $this->entryHelper->getSelectorClass('MockUser');

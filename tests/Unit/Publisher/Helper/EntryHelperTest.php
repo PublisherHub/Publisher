@@ -42,7 +42,7 @@ class EntryHelperTest extends BaseEntryHelperTest
     
     public function testGetPublisherScopes()
     {
-        $this->config['entryIds']['Mock'] = array('User');
+        $this->config['entries']['Mock'] = array('User');
         $this->entryHelper = $this->getEntryHelper($this->config);
         
         $this->assertSame(array(), $this->entryHelper->getPublisherScopes('MockUser'));   

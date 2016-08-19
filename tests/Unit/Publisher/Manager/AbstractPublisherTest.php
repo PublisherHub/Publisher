@@ -67,7 +67,7 @@ abstract class AbstractPublisherTest extends \PHPUnit_Framework_TestCase
     protected function getEntryHelper()
     {
         $config = array(
-            'entryIds' => array(
+            'entries' => array(
                 'Mock' => array('User')
             ),
             'modes' => array('Mock')

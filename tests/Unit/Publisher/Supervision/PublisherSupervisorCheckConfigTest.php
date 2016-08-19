@@ -15,7 +15,7 @@ class PublisherSupervisorCheckConfigTest extends \PHPUnit_Framework_TestCase
         );
         
         $config = array(
-            'entryIds' => array(
+            'entries' => array(
                 'Mock' => array('User', 'Page')
             ),
             'modes' => array(
@@ -39,7 +39,7 @@ class PublisherSupervisorCheckConfigTest extends \PHPUnit_Framework_TestCase
         );
         
         $config = array(
-            'entryIds' => array(
+            'entries' => array(
                 'Mock' => array('Forum') // MockForumEntry doesn't exists
             ),
             'modes' => array(

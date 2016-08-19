@@ -13,7 +13,7 @@ class PublisherSupervisorTest extends \PHPUnit_Framework_TestCase
     public function __construct($name = NULL, array $data = array(), $dataName = '')
     {
         $this->config = array(
-            'entryIds' => array(
+            'entries' => array(
                 'Facebook' => array('User', 'Page'),
                 'Twitter' => array('User'),
                 'Xing' => array('User', 'Forum')
@@ -53,16 +53,16 @@ class PublisherSupervisorTest extends \PHPUnit_Framework_TestCase
     
     public function testGetServices()
     {
-        $services = array_keys($this->config['entryIds']);
+        $services = array_keys($this->config['entries']);
         
         $this->assertEquals($services, $this->supervisor->getServices());
     }
     
-    public function testGetEntrySubTypes()
+    public function testGetEntrySubtypes()
     {
-        $entrySubTypes = $this->config['entryIds'];
+        $entrySubtypes = $this->config['entries'];
         
-        $this->assertEquals($entrySubTypes, $this->supervisor->getEntrySubTypes());
+        $this->assertEquals($entrySubtypes, $this->supervisor->getEntrySubtypes());
     }
     
     public function testGetAllModes()

@@ -16,7 +16,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         try {
             Validator::validateMessageLength('foo', 3);
             Validator::validateMessageLength('   ', 3);
-            $valid = true;
+            
         } catch (LengthException $exception) {}
         
         $this->assertNull($exception);
@@ -152,6 +152,84 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $given = 'notFoo';
         
         Validator::validateValue($given, $allowed);
+    }
+    
+    public function testGetScheduleValidation()
+    {
+        $notADate = 'not a timestamp either';
+        $this->assertNull(Validator::getScheduleValidation(
+            $notADate,
+            'PT15M',
+            'P6M'
+        ));
+        
+        $date = new \DateTime('now');
+        $this->assertFalse(Validator::getScheduleValidation(
+            $date,
+            'PT15M',
+            'P6M'
+        ));
+        $this->assertFalse(Validator::getScheduleValidation(
+            $date->getTimestamp(),
+            'PT15M',
+            'P6M'
+        ));
+        
+        $date->add(new \DateInterval('PT30M'));
+        $this->assertTrue(Validator::getScheduleValidation(
+            $date,
+            'PT15M',
+             'P6M'
+        ));
+        $this->assertTrue(Validator::getScheduleValidation(
+            $date->getTimestamp(),
+            'PT15M',
+            'P6M'
+        ));
+        
+        $date = new \DateTime('now');
+        $date->add(new \DateInterval('P6M'));
+        $this->assertTrue(Validator::getScheduleValidation(
+            $date,
+            'PT15M',
+            'P6M'
+        ));
+        $this->assertTrue(Validator::getScheduleValidation(
+            $date->getTimestamp(),
+            'PT15M',
+            'P6M'
+        ));
+        
+        // Ad another 30 minutes and exceed time intervall
+        $date->add(new \DateInterval('PT30M'));
+        $this->assertFalse(Validator::getScheduleValidation(
+            $date,
+            'PT15M',
+            'P6M'
+        ));
+        $this->assertFalse(Validator::getScheduleValidation(
+            $date->getTimestamp(),
+            'PT15M',
+            'P6M'
+        ));
+    }
+    
+    public function testIsValidSchedule()
+    {
+        $date = new \DateTime('now');
+        $this->assertFalse(Validator::isValidSchedule($date, 'PT15M', 'P6M'));
+        
+        $date->add(new \DateInterval('PT30M'));
+        $this->assertTrue(Validator::isValidSchedule($date, 'PT15M', 'P6M'));
+        
+        
+        $date = new \DateTime('now');
+        $date->add(new \DateInterval('P6M'));
+        $this->assertTrue(Validator::isValidSchedule($date, 'PT15M', 'P6M'));
+        
+        // Ad another 30 minutes and exceed time intervall
+        $date->add(new \DateInterval('PT30M'));
+        $this->assertFalse(Validator::isValidSchedule($date, 'PT15M', 'P6M'));
     }
     
 }

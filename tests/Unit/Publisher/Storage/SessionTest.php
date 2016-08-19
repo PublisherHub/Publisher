@@ -62,10 +62,8 @@ class SessionTest extends \PHPUnit_Framework_TestCase
         
         $this->storage->clearAll();
         
-        $this->assertEquals(array(), $this->getStorage());
-        foreach ($clientIds as $clientId) {
-            $this->assertFalse(array_key_exists($clientId, $this->getStorage()));
-        }
+        $this->assertEquals(null, $this->getStorage());
+        $this->assertNull($this->getStorage());
         
     }
     

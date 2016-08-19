@@ -32,6 +32,9 @@ class PublisherSupervisor implements
     
     // implementation of PublisherSupervisorInterface
     
+    /**
+     * @{inheritdoc}
+     */
     public function checkConfig()
     {
         $notFound = array();
@@ -41,35 +44,59 @@ class PublisherSupervisor implements
         return $notFound;
     }
     
+    /**
+     * @{inheritdoc}
+     */
     public function getServices()
     {
-        return array_keys($this->config['entryIds']);
-    }
-    
-    public function getEntrySubTypes()
-    {
-        return $this->config['entryIds'];
+        return array_keys($this->config['entries']);
     }
     
     /**
-     * Returns all configured modes.
-     * That doesn't mean that each entry supports this mode.
-     * 
-     * @return array
+     * @{inheritdoc}
+     */
+    public function getEntrySubtypes()
+    {
+        return $this->config['entries'];
+    }
+    
+    /**
+     * @{inheritdoc}
      */
     public function getAllModes()
     {
         return $this->config['modes'];
     }
     
+    /**
+     * @{inheritdoc}
+     */
+    public function getEntryIds(string $serviceId)
+    {
+        if (isset($this->config['entries'][$serviceId])) {
+            
+            $subtypes = $this->config['entries'][$serviceId];
+            $entryIds = array();
+            foreach ($subtypes as $subtype) {
+                $entryIds[] = $serviceId.$subtype;
+            }
+            
+            return $entryIds;
+            
+        } else {
+            
+            return array();
+        }
+    }
+    
     protected function getMissingEntries()
     {
-        $entrySubTypes = $this->getEntrySubTypes();
+        $entrySubtypes = $this->getEntrySubtypes();
         
         $classes = array();
-        foreach ($entrySubTypes as $service => $subTypes) {
-            foreach ($subTypes as $subType) {
-                $classes[] = self::ENTRY_NAMESPACE.$service.'\\'.$service.$subType.'Entry';
+        foreach ($entrySubtypes as $service => $subtypes) {
+            foreach ($subtypes as $subtype) {
+                $classes[] = self::ENTRY_NAMESPACE.$service.'\\'.$service.$subtype.'Entry';
             }
         }
         
@@ -117,6 +144,9 @@ class PublisherSupervisor implements
     
     // implementation of BaseEntryHelperInterface
     
+    /**
+     * @{inheritdoc}
+     */
     public function getServiceId(string $entryId)
     {
         $serviceId = preg_replace(self::SERVICE_PATTERN, "$1", $entryId);
@@ -134,39 +164,24 @@ class PublisherSupervisor implements
     }
     
     /**
-     * Returns all available entry ids of $service.
-     * 
-     * @param string $serviceId
-     * @return array
+     * @{inheritdoc}
      */
-    public function getEntryIds(string $serviceId)
-    {
-        if (isset($this->config['entryIds'][$serviceId])) {
-            
-            $subTypes = $this->config['entryIds'][$serviceId];
-            $entryIds = array();
-            foreach ($subTypes as $subType) {
-                $entryIds[] = $serviceId.$subType;
-            }
-            
-            return $entryIds;
-            
-        } else {
-            
-            return array();
-        }
-    }
-    
     public function getEntryClass(string $entryId)
     {
         return $this->getClass($entryId, 'Entry');
     }
     
+    /**
+     * @{inheritdoc}
+     */
     public function getSelectorClass(string $entryId)
     {
         return $this->getClass($entryId, 'Selector', '\\Selector\\');
     }
     
+    /**
+     * @{inheritdoc}
+     */
     public function getModeClass(string $modeId)
     {
         $class = self::MODE_NAMESPACE.$modeId.'\\'.$modeId.'Mode';

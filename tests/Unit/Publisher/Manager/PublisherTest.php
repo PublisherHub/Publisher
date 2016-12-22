@@ -25,7 +25,7 @@ class PublisherTest extends BaseTest
      */
     protected function getModeId()
     {
-        return 'Mock';
+        return 'Foo';
     }
     
 }

@@ -1,7 +1,7 @@
 # Publisher
 Publish / post via OAuth1 and OAuth2 services.
 
-Publisher offers classes and interfaces that allow you to post several entries.
+Publisher offers classes and interfaces that allow you to post several entries at once.
 
 # Main components
 - Entry
@@ -43,7 +43,7 @@ $ php composer.phar install
 - Requestor
     - phpoauthlib/requestor -> an implementation of a RequestorFactory that uses lusitanian/oauth
 - other
-    - publisher/form-bundle -> offers forms, views and translations for the publishing process
+    - publisher/form-bundle -> offers forms and views for the publishing process
     - publisher/publisher-symfony-bundle -> add publisher to your Symfony app
     - publisher/publisher-silex-bundle -> add publisher to your Silex app
 
@@ -55,8 +55,8 @@ Examples of basic usage are located in the examples/ directory.
 
 ## Package structure (namespaces)
 Szenario:
-A Service called 'Foo' offers to post a status and to post in groups that the user is a member of.
-The Entries of this package implement the two Modes 'Recommendation' and 'SimpleMessage'.
+A Service (e.g. social network) called 'Foo' offers to post a status
+and to post in groups that the user is a member of.
 
 FooEntry:
 - Entity
@@ -72,18 +72,19 @@ FooEntry:
 - FooUserEntry.php
 - FooGroupEntry.php
             
+Then we have a mode called 'Recommendation'.
+It provides the content generation
 
 Recommendation:
-- Entity
-    - AbstractRecommendation.php
-- Form
+- AbstractRecommendation.php
+- Form (optional)
     - Type
         RecommendationType.php
-- Resources
+- Resources (optional)
     - translations
     - views
-- RecommendationInterface.php
-- RecommendationMode.php
+
+
 
 Modes should provide a Form and an Entity for validation.
 Entries that implement a Mode should implement the abstract entity given by the Mode.

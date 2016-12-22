@@ -3,28 +3,17 @@
 namespace Unit\Publisher\Supervision;
 
 use Publisher\Supervision\PublisherSupervisor;
+use Unit\Publisher\Helper\BaseEntryHelperTest;
 
-class PublisherSupervisorTest extends \PHPUnit_Framework_TestCase
+class PublisherSupervisorTest extends BaseEntryHelperTest
 {
     
-    protected $config;
-    protected $supervisor;
-    
-    public function __construct($name = NULL, array $data = array(), $dataName = '')
+    protected function getEntryHelper(array $config)
     {
-        $this->config = array(
-            'entries' => array(
-                'Facebook' => array('User', 'Page'),
-                'Twitter' => array('User'),
-                'Xing' => array('User', 'Forum')
-            ),
-            'modes' => array(
-                'Recommendation'
-            )
-        );
-        
-        parent::__construct($name, $data, $dataName);
+        return new PublisherSupervisor($config);
     }
+    
+    // begin supervisor specific tests
     
     public function setUp()
     {
@@ -45,11 +34,9 @@ class PublisherSupervisorTest extends \PHPUnit_Framework_TestCase
     public function getServiceWithEntryIds()
     {
         return array(
-            array('Facebook', array('FacebookUser', 'FacebookPage')),
-            array('Service', array())
+            array('Service', array('ServiceUser', 'ServicePage'))
         );
     }
-    
     
     public function testGetServices()
     {
@@ -70,6 +57,13 @@ class PublisherSupervisorTest extends \PHPUnit_Framework_TestCase
         $allModes = $this->config['modes'];
         
         $this->assertEquals($allModes, $this->supervisor->getAllModes());
+    }
+    
+    public function testGetModeEntity()
+    {
+        $modeClass = '\\Publisher\\Entry\\Service\\Mode\\Foo\\ServiceUserFoo';
+        
+        $this->assertEquals($modeClass, $this->supervisor->getModeClass('Foo', 'ServiceUser'));
     }
     
 }

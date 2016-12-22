@@ -37,12 +37,14 @@ interface BaseEntryHelperInterface
     public function getSelectorClass(string $entryId);
     
     /**
-     * Returns the full class name of the Mode with the ID $modeId.
+     * Returns the full class name of a Mode Entity.
+     * If $entryId is 'Abstract' it should return the base Entity.
      * 
      * @param string $modeId ID of an Mode
+     * @param string $entryId ID of an Entry
      * 
      * @return string
      */
-    public function getModeClass(string $modeId);
+    public function getModeClass(string $modeId, string $entryId = 'Abstract');
     
 }

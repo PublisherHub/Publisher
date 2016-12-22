@@ -11,16 +11,36 @@ use Publisher\Entry\Exception\EntryNotFoundException;
  * Check if all classes can be found.
  * 
  * You can use specific configurations e.g. for each user.
- * 
- * If you want to add more 
  */
 class PublisherSupervisor implements
     PublisherSupervisorInterface,
     BaseEntryHelperInterface
 {
+    /**
+     * [1] service id [2] entry id
+     */
+    const ENTRY_PATTERN = '\\Publisher\\Entry\\%s\\%sEntry';
     
-    const ENTRY_NAMESPACE = '\\Publisher\\Entry\\';
-    const MODE_NAMESPACE = '\\Publisher\\Mode\\';
+    /**
+     * [1] service id [2] entry id
+     */
+    const SELECTOR_PATTERN = '\\Publisher\\Entry\\%s\\Selector\\%sSelector';
+    
+    /**
+     * [1] service id [2] mode id [3] entry id . mode id
+     */
+    const MODE_PATTERN = '\\Publisher\\Entry\\%s\\Mode\\%s\\%s';
+    
+    /**
+     * [1] mode id [2] mode id
+     */
+    const ABSTRACT_MODE_PATTERN = '\\Publisher\\Mode\\%s\\Abstract%s';
+    
+    /**
+     * [1] type id [2] type id
+     */
+    const NOT_FOUND_EXCEPTION_PATTERN = '\\Publisher\\%s\\Exception\\%sNotFoundException';
+    
     const SERVICE_PATTERN = '/^([A-Za-z]+)(User|Forum|Group|Page)$/';
     
     protected $config;
@@ -40,6 +60,7 @@ class PublisherSupervisor implements
         $notFound = array();
         $notFound['entries'] = $this->getMissingEntries();
         $notFound['modes'] = $this->getMissingModes();
+        $notFound['entities'] = $this->getMissingEntities();
         
         return $notFound;
     }
@@ -78,15 +99,13 @@ class PublisherSupervisor implements
             $subtypes = $this->config['entries'][$serviceId];
             $entryIds = array();
             foreach ($subtypes as $subtype) {
-                $entryIds[] = $serviceId.$subtype;
+                $entryIds[] = $serviceId . $subtype;
             }
             
             return $entryIds;
-            
-        } else {
-            
-            return array();
         }
+        
+        return array();
     }
     
     protected function getMissingEntries()
@@ -96,46 +115,69 @@ class PublisherSupervisor implements
         $classes = array();
         foreach ($entrySubtypes as $service => $subtypes) {
             foreach ($subtypes as $subtype) {
-                $classes[] = self::ENTRY_NAMESPACE.$service.'\\'.$service.$subtype.'Entry';
+                $classes[] = sprintf(self::ENTRY_PATTERN, $service, $service . $subtype);
             }
         }
         
-        return $this->checkExists($classes);
+        return $this->getMissingClasses($classes);
     }
     
     protected function getMissingModes()
     {
         $modes = $this->config['modes'];
         
-        $interfaces = array();
         $classes = array();
         foreach ($modes as $mode) {
-            $interfaces[] = self::MODE_NAMESPACE.$mode.'\\'.$mode.'Interface';
-            $classes[] = self::MODE_NAMESPACE.$mode.'\\'.$mode.'Mode';
+            $classes[] = sprintf('\\Publisher\\Mode\\' . $mode . '\\Abstract' . $mode);
         }
         
-        $notFound = $this->checkExists($classes);
+        // @todo check which Entries have an ModeEntity
         
-        return array_merge($notFound, $this->checkExists($interfaces, 'interface'));
+        return $this->getMissingClasses($classes);
     }
     
     /**
-     * Returns the classes or interfaces stored in $names
+     * Checks if each Entry has an Entity for all Modes.
+     * 
+     * @return string[]
+     */
+    protected function getMissingEntities()
+    {
+        $modes = $this->getAllModes();
+        $entrySubtypes = $this->getEntrySubtypes();
+        
+        $classes = array();
+        foreach ($entrySubtypes as $service => $subtypes) {
+            foreach ($modes as $mode) {
+                foreach ($subtypes as $subtype) {
+                    $classes[] = sprintf(
+                        self::MODE_PATTERN,
+                        $service,
+                        $mode,
+                        $service . $subtype . $mode
+                    );
+                }
+            }
+        }
+        
+        return $this->getMissingClasses($classes);
+    }
+    
+    /**
+     * Returns the classes stored in $classes
      * that couldn't be found. 
      * 
-     * @param array $names classes or interfaces
-     * @param string $type 'class' or 'interface'
+     * @param string[] $classes
      * 
      * @return array
      */
-    protected function checkExists(array $names, string $type = 'class')
+    protected function getMissingClasses(array $classes)
     {
         $notFound = array();
-        $checkExists = $type.'_exists';
         
-        foreach ($names as $name) {
-            if (!$checkExists($name)) {
-                $notFound[] = $name;
+        foreach ($classes as $class) {
+            if (!class_exists($class)) {
+                $notFound[] = $class;
             }
         }
         
@@ -168,7 +210,12 @@ class PublisherSupervisor implements
      */
     public function getEntryClass(string $entryId)
     {
-        return $this->getClass($entryId, 'Entry');
+        $service = $this->getServiceId($entryId);
+        $class = sprintf(self::ENTRY_PATTERN, $service, $entryId);
+        
+        $this->checkClassExists($class, 'Entry');
+        
+        return $class;
     }
     
     /**
@@ -176,32 +223,27 @@ class PublisherSupervisor implements
      */
     public function getSelectorClass(string $entryId)
     {
-        return $this->getClass($entryId, 'Selector', '\\Selector\\');
+        $service = $this->getServiceId($entryId);
+        $class = sprintf(self::SELECTOR_PATTERN, $service, $entryId);
+        
+        $this->checkClassExists($class, 'Selector');
+        
+        return $class;
     }
     
     /**
      * @{inheritdoc}
      */
-    public function getModeClass(string $modeId)
+    public function getModeClass(string $modeId, string $entryId = 'Abstract')
     {
-        $class = self::MODE_NAMESPACE.$modeId.'\\'.$modeId.'Mode';
+        if ($entryId == 'Abstract') {
+            $class = sprintf(self::ABSTRACT_MODE_PATTERN, $modeId, $modeId);
+        } else {
+            $service = $this->getServiceId($entryId);
+            $class = sprintf(self::MODE_PATTERN, $service, $modeId, $entryId . $modeId);
+        }
         
         $this->checkClassExists($class, 'Mode');
-        
-        return $class;
-    }
-    
-    protected function getClass(
-            string $entryId,
-            string $type,
-            string $prefix = '\\'
-    ) {
-        $service = $this->getServiceId($entryId);
-        
-        $class = self::ENTRY_NAMESPACE.$service.$prefix; // @todo too static
-        $class .= $entryId.$type;
-        
-        $this->checkClassExists($class, $type);
         
         return $class;
     }
@@ -209,8 +251,7 @@ class PublisherSupervisor implements
     protected function checkClassExists(string $class, string $type)
     {
         if (!class_exists($class)) {
-            $exceptionClass = '\\Publisher\\'.$type.'\\Exception\\';
-            $exceptionClass .= $type.'NotFoundException';
+            $exceptionClass = sprintf(self::NOT_FOUND_EXCEPTION_PATTERN, $type, $type);
             throw new $exceptionClass("Unknown $type: $class");
         }
     }

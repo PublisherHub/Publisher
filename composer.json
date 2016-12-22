@@ -10,7 +10,8 @@
         }
     ],
     "require": {
-        "php": ">=7.0.0"
+        "php": ">=7.0.0",
+        "symfony/http-foundation": "^3.1"
     },
     "suggest": {
         "publisher/facebook-entry": "Adds entries for posting on Facebook.",
@@ -23,9 +24,9 @@
         "psr-4": {
             "Publisher\\": "src/Publisher",
             "Unit\\": "tests/Unit",
-            "Publisher\\Entry\\Mock\\": "tests/Mock/Entry",
-            "Publisher\\Mode\\Mock\\": "tests/Mock/Mode"
-            
+            "Publisher\\Entry\\Service\\": "tests/Mock/Entry/Service",
+            "Publisher\\Mode\\Foo\\": "tests/Mock/Mode/Foo",
+            "Publisher\\Entry\\Service\\Mode\\Foo\\": "tests/Mock/ServiceFooEntity/Foo"
         }
     }
 }

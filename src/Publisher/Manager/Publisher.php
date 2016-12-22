@@ -7,7 +7,6 @@ use Publisher\Helper\EntryHelperInterface;
 use Publisher\Entry\Factory\EntryFactoryInterface;
 use Publisher\Requestor\RequestorFactoryInterface;
 use Publisher\Monitoring\MonitoringInterface;
-use Publisher\Helper\Exception\MissingRequiredParameterException;
 use Publisher\Entry\EntryInterface;
 use Publisher\Requestor\RequestorInterface;
 
@@ -25,10 +24,10 @@ class Publisher implements PublishingManagerInterface
     protected $entries;
     
     public function __construct(
-            EntryHelperInterface $entryHelper,
-            EntryFactoryInterface $entryFactory,
-            RequestorFactoryInterface $requestorFactory,
-            MonitoringInterface $monitor
+        EntryHelperInterface $entryHelper,
+        EntryFactoryInterface $entryFactory,
+        RequestorFactoryInterface $requestorFactory,
+        MonitoringInterface $monitor
     ) {
         $this->entryHelper = $entryHelper;
         $this->entryFactory = $entryFactory;
@@ -59,12 +58,10 @@ class Publisher implements PublishingManagerInterface
             $entryId = $this->entries[$i]['entry'];
             $parameters = $this->entries[$i]['parameters'];
             $content = $this->entries[$i]['content'];
-            $mode = $this->entries[$i]['mode'];
             
             if (!$this->monitor->executed($entryId)) {
-                $this->publishEntry($entryId, $parameters, $content, $mode);
+                $this->publishEntry($entryId, $parameters, $content);
             }
-            
         }
     }
     
@@ -92,39 +89,19 @@ class Publisher implements PublishingManagerInterface
         $this->monitor->clearStatus();
     }
     
-    
     protected function importEntries(array $data)
     {
         for ($i = 0; $i < count($data); $i++) {
-            $this->entryHelper->checkIsEntryId($data[$i]['entry']);
-            $this->checkContent($data[$i]['mode'], $data[$i]['content']); 
+            $this->entryHelper->checkIsEntryId($data[$i]['entry']); 
             if (!isset($data[$i]['parameters'])) {
                 $data[$i]['parameters'] = array();
             }
             $this->entries[] = array(
                 'entry'   => $data[$i]['entry'],
                 'content' => $data[$i]['content'],
-                'parameters' => $data[$i]['parameters'],
-                'mode' => $data[$i]['mode']
+                'parameters' => $data[$i]['parameters']
             );
         }
-    }
-    
-    /**
-     * Checks if all parameters are set in $content
-     * that are required by the mode.
-     * 
-     * @param string $mode
-     * @param array $content
-     * 
-     * @return void
-     * 
-     * @throws MissingRequiredParameterException
-     */
-    protected function checkContent(string $mode, array $content)
-    {
-        $modeClass = $this->entryHelper->getModeClass($mode);
-        $modeClass::checkContent($content);
     }
     
     /**
@@ -137,7 +114,6 @@ class Publisher implements PublishingManagerInterface
         for ($i = 0; $i < count($this->entries); $i++) {
             $this->monitor->monitor($this->entries[$i]['entry']);
         }
-        
     }
     
     /**
@@ -149,33 +125,14 @@ class Publisher implements PublishingManagerInterface
     protected function publishEntry(
             string $entryId,
             array $parameters,
-            array $content,
-            string $modeId
+            array $content
     ) {
         $entry = $this->entryFactory->getEntry($entryId, $parameters);
-        $this->fillEntry($modeId, $entry, $content);
+        $entry->setBody($content);
         
         $response = $this->publish($entry);
             
         $this->setStatus($entryId, $entry, $response);
-    }
-    
-    /**
-     * Sets the body parameters of $entry with $content based on $mode.
-     * 
-     * @param string $mode mode id of an Publisher\Mode\ModeInterface
-     * @param EntryInterface $entry
-     * @param array $content contains mode specific parameters
-     * 
-     * @return void
-     */
-    protected function fillEntry(
-            string $mode,
-            EntryInterface $entry,
-            array $content
-    ) {
-        $modeClass = $this->entryHelper->getModeClass($mode);
-        $modeClass::fillEntry($entry, $content);
     }
     
     /**

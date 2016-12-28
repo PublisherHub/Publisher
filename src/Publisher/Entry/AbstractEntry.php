@@ -47,6 +47,9 @@ abstract class AbstractEntry implements EntryInterface, MonitoredInterface
         $this->request->setBody($body);
     }
     
+    /**
+     * @return Request
+     */
     public function getRequest()
     {
         return $this->request;

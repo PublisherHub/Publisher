@@ -32,14 +32,14 @@ abstract class AbstractPublisherTest extends \PHPUnit_Framework_TestCase
     {    
         $entryData = array();
         $entryData[] = array(
-            'entry' => 'MockUser',
+            'entry' => 'ServiceUser',
             'content' => $content,
             'mode' => $this->getModeId()
         );
         
         $publisher = $this->getPublisher($entryData);
         
-        $expectedStatus = array('MockUser' => null);
+        $expectedStatus = array('ServiceUser' => null);
         $this->assertSame($expectedStatus, $publisher->getStatus());
         $this->assertSame(false, $publisher->hasFinished());
         
@@ -68,9 +68,9 @@ abstract class AbstractPublisherTest extends \PHPUnit_Framework_TestCase
     {
         $config = array(
             'entries' => array(
-                'Mock' => array('User')
+                'Service' => array('User')
             ),
-            'modes' => array('Mock')
+            'modes' => array('Foo')
         );
         
         $supervisor = new PublisherSupervisor($config);

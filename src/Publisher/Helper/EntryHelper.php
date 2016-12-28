@@ -49,9 +49,9 @@ class EntryHelper implements EntryHelperInterface
         return $this->baseHelper->getSelectorClass($entryId);;
     }
     
-    public function getModeClass(string $modeId)
+    public function getModeClass(string $modeId, string $entryId = 'Abstract')
     {
-        return $this->baseHelper->getModeClass($modeId);
+        return $this->baseHelper->getModeClass($modeId, $entryId);
     }
 
 }

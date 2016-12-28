@@ -9,18 +9,19 @@ class PublisherSupervisorCheckConfigTest extends \PHPUnit_Framework_TestCase
     
     public function testAllFound()
     {
-        $notFound = array(
-            'entries' => array(),
-            'modes' => array()
-        );
-        
         $config = array(
             'entries' => array(
-                'Mock' => array('User', 'Page')
+                'Service' => array('User', 'Page')
             ),
             'modes' => array(
-                'Mock'
+                'Foo'
             )
+        );
+        
+        $notFound = array(
+            'entries' => array(),
+            'modes' => array(),
+            'entities' => array()
         );
         
         $supervisor = new PublisherSupervisor($config);
@@ -30,20 +31,21 @@ class PublisherSupervisorCheckConfigTest extends \PHPUnit_Framework_TestCase
     
     public function testNotFound()
     {
-        $notFound = array(
-            'entries' => array('\\Publisher\\Entry\\Mock\\MockForumEntry'),
-            'modes' => array(
-                '\\Publisher\\Mode\\MockText\\MockTextMode',
-                '\\Publisher\\Mode\\MockText\\MockTextInterface'
-            )
-        );
-        
         $config = array(
             'entries' => array(
-                'Mock' => array('Forum') // MockForumEntry doesn't exists
+                'Service' => array('Forum') // ServiceForumEntry doesn't exists
             ),
             'modes' => array(
-                'MockText' // MockTextMode, MockTextInterface doesn't exists
+                'Text' // the AbstractEntryModeEntity AbstractText doesn't exists
+            )
+            // the EntryModeEntity ServiceForumText doesn't exists
+        );
+        
+        $notFound = array(
+            'entries' => array('\\Publisher\\Entry\\Service\\ServiceForumEntry'),
+            'modes' => array('\\Publisher\\Mode\\Text\\AbstractText'),
+            'entities' => array(
+                '\\Publisher\\Entry\\Service\\Mode\\Text\\ServiceForumText'
             )
         );
         

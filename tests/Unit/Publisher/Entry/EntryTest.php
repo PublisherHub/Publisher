@@ -2,8 +2,16 @@
 
 namespace Unit\Publisher\Entry;
 
+use Publisher\Entry\EntryInterface;
+
 abstract class EntryTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @param array $body
+     * @param array $parameters
+     * 
+     * @return EntryInterface
+     */
     protected function getEntry(array $body = array(), array $parameters = array())
     {
         $entryName = $this->getEntryClass();
@@ -13,12 +21,42 @@ abstract class EntryTest extends \PHPUnit_Framework_TestCase
         return $entry;
     }
     
+    /**
+     * @return string full class name
+     */
     protected abstract function getEntryClass();
     
+    public function testGetPublisherScopes()
+    {
+        $entryClass = $this->getEntryClass();
+        
+        $this->assertEquals(
+            $this->getExpectedPublisherScopes(),
+            $entryClass::getPublisherScopes()
+        );
+    }
+    
+    /**
+     * @return array
+     */
+    protected function getExpectedPublisherScopes()
+    {
+        return array();
+    }
+
+    /**
+     * @return array
+     */
     public abstract function getValidBody();
     
+    /**
+     * @return array
+     */
     public abstract function getInvalidBody();
     
+    /**
+     * @return array
+     */
     public abstract function getBodyWithExceededMessage();
     
     /**
@@ -57,7 +95,9 @@ abstract class EntryTest extends \PHPUnit_Framework_TestCase
         $body = $this->entry->getBody();
     }
     
-    
+    /**
+     * @return string
+     */
     protected function getExceededMessage()
     {
         $entryName = $this->getEntryClass();

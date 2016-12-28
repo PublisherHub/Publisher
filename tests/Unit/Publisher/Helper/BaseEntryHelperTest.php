@@ -2,9 +2,6 @@
 
 namespace Unit\Publisher\Helper;
 
-use Publisher\Helper\EntryHelper;
-use Publisher\Supervision\PublisherSupervisor;
-
 abstract class BaseEntryHelperTest extends \PHPUnit_Framework_TestCase
 {
     
@@ -15,12 +12,10 @@ abstract class BaseEntryHelperTest extends \PHPUnit_Framework_TestCase
     {
         $this->config = array(
             'entries' => array(
-                'Facebook' => array('User', 'Page'),
-                'Twitter' => array('User'),
-                'Xing' => array('User', 'Forum')
+                'Service' => array('User', 'Page')
             ),
             'modes' => array(
-                'Recommendation'
+                'Foo'
             )
         );
         
@@ -40,33 +35,28 @@ abstract class BaseEntryHelperTest extends \PHPUnit_Framework_TestCase
     public function getServices()
     {
         return array(
-            array('FacebookPage', 'Facebook'),
-            array('TwitterUser', 'Twitter'),
-            array('XingForum', 'Xing')
+            array('ServicePage', 'Service'),
+            array('ServiceUser', 'Service')
         );
     }
     
     public function testGetEntryClass()
     {
-        $this->config['entries']['Mock'] = array('User');
-        $this->entryHelper = $this->getEntryHelper($this->config);
-        $entryClass = '\\Publisher\\Entry\\Mock\\MockUserEntry';
+        $entryClass = '\\Publisher\\Entry\\Service\\ServiceUserEntry';
         
         $this->assertSame(
                 $entryClass,
-                $this->entryHelper->getEntryClass('MockUser')
+                $this->entryHelper->getEntryClass('ServiceUser')
         );
     }
     
     public function testGetSelectorClass()
     {
-        $this->config['entries']['Mock'] = array('Page');
-        $this->entryHelper = $this->getEntryHelper($this->config);
-        $selectorClass = '\\Publisher\\Entry\\Mock\\Selector\\MockPageSelector';
+        $selectorClass = '\\Publisher\\Entry\\Service\\Selector\\ServicePageSelector';
         
         $this->assertSame(
                 $selectorClass,
-                $this->entryHelper->getSelectorClass('MockPage')
+                $this->entryHelper->getSelectorClass('ServicePage')
         );
     }
     
@@ -75,25 +65,16 @@ abstract class BaseEntryHelperTest extends \PHPUnit_Framework_TestCase
      */
     public function testSelectorNotFound()
     {
-        $this->config['entries']['Mock'] = array('User');
-        $this->entryHelper = $this->getEntryHelper($this->config);
-        
-        $selectorClass = $this->entryHelper->getSelectorClass('MockUser');
+        $selectorClass = $this->entryHelper->getSelectorClass('ServiceUser');
     }
     
     public function testGetModeClass()
     {
-        $this->config['modes'][] = array('Mock');
-        $this->entryHelper = $this->getEntryHelper($this->config);
-        $modeClass = '\\Publisher\\Mode\\Mock\\MockMode';
+        $modeClass = '\\Publisher\\Mode\\Foo\\AbstractFoo';
         
-        $this->assertSame($modeClass, $this->entryHelper->getModeClass('Mock'));
+        $this->assertSame($modeClass, $this->entryHelper->getModeClass('Foo'));
     }
     
-    protected function getEntryHelper(array $config)
-    {
-        $supervisor = new PublisherSupervisor($config);
-        return new EntryHelper($supervisor);
-    }
+    abstract protected function getEntryHelper(array $config);
     
 }

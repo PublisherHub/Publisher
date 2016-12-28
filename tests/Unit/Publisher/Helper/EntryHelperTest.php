@@ -25,9 +25,8 @@ class EntryHelperTest extends BaseEntryHelperTest
     public function getConfiguredEntryIds()
     {
         return array(
-            array('FacebookPage'),
-            array('TwitterUser'),
-            array('XingForum')
+            array('ServicePage'),
+            array('ServiceUser')
         );
     }
     
@@ -36,16 +35,13 @@ class EntryHelperTest extends BaseEntryHelperTest
      */
     public function testEntryNotFound()
     {
-        $id = 'ServiceUser';
+        $id = 'NoserviceUser';
         $this->entryHelper->checkIsEntryId($id);
     }
     
     public function testGetPublisherScopes()
     {
-        $this->config['entries']['Mock'] = array('User');
-        $this->entryHelper = $this->getEntryHelper($this->config);
-        
-        $this->assertSame(array(), $this->entryHelper->getPublisherScopes('MockUser'));   
+        $this->assertSame(array(), $this->entryHelper->getPublisherScopes('ServiceUser'));   
     }
     
     protected function getEntryHelper(array $config)

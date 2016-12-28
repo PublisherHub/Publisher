@@ -11,19 +11,19 @@ class AbstractEntryTest extends EntryTest
     {
         $entryClass = $this->getEntryClass();
         
-        $this->assertEquals('MockUser', $entryClass::getId());
+        $this->assertEquals('ServiceUser', $entryClass::getId());
     }
     
     public function testGetServiceId()
     {
         $entryClass = $this->getEntryClass();
         
-        $this->assertEquals('Mock', $entryClass::getServiceId());
+        $this->assertEquals('Service', $entryClass::getServiceId());
     }
     
     protected function getEntryClass()
     {
-        return 'Publisher\\Entry\\Mock\\MockUserEntry';
+        return 'Publisher\\Entry\\Service\\ServiceUserEntry';
     }
 
     public function getBodyWithExceededMessage()

@@ -9,7 +9,7 @@ class ServiceUserFoo extends AbstractFoo
     
     public function generateBody()
     {
-        return array('message' => 'foo');
+        return array('status' => $this->message);
     }
 
 }

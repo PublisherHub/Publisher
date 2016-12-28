@@ -34,22 +34,16 @@ $ php composer.phar install
 ```
 
 # Suggestions
+!! repros will be published end of 2016 !!!
 - Entry
     - publisher/facebook-entry -> adds entries for posting on Facebook
     - publisher/twitter-entry -> adds entries for posting on Twitter
     - publisher/xing-entry -> adds entries for posting on XING
 - Mode
     - publisher/recommendation -> adds mode for publishing
-- Requestor
-    - phpoauthlib/requestor -> an implementation of a RequestorFactory that uses lusitanian/oauth
-- other
-    - publisher/form-bundle -> offers forms and views for the publishing process
-    - publisher/publisher-symfony-bundle -> add publisher to your Symfony app
-    - publisher/publisher-silex-bundle -> add publisher to your Silex app
 
 # Examples
 Examples of basic usage are located in the examples/ directory.
-
 
 # Development
 
@@ -75,7 +69,7 @@ FooEntry:
 Then we have a mode called 'Recommendation'.
 It provides the content generation
 
-Recommendation:
+Recommendation (!!!structure in progress, working on the validation part!!!):
 - AbstractRecommendation.php
 - Form (optional)
     - Type
@@ -84,29 +78,35 @@ Recommendation:
     - translations
     - views
 
-
-
-Modes should provide a Form and an Entity for validation.
+Modes should provide a Form and an base Entity for mapping and for validation.
 Entries that implement a Mode should implement the abstract entity given by the Mode.
+Please refer to the following repositories for examples:
+- !! repros will be published end of 2016 !!!
+-
+-
 
 
-## Conventions
+## Naming Conventions
 
 - EntyNamespace:   Publisher\Entry\ServiceId
-- EntryClassNames: ServiceId(User|Page|Group|Forum)Entry
+- EntryClassName: ServiceId(User|Page|Group|Forum)Entry
 
 - SelectorNamespace:  Publisher\Entry\ServiceId\Selector
-- SelectorClassNames: ServiceId(User|Page|Group|Forum)Selector
+- SelectorClassName: ServiceId(User|Page|Group|Forum)Selector
 
 The Selector should be matching with the id of the Entry that it belongs to.
 If their is no Selector needed, then their is no need to implement one.
 But you should add the 'Selector' directory nonetheless.
 
-
 - ModeNamespace:  Publisher\Mode\ModeId
-- InterfaceClass: ModeIdInterface
 - ModeClass:      ModeIdMode
 
+Then we have the EntryModeEntities.
+The implement an base mode entity like AbstractRecommendation
+for a specific entry type of a service.
+
+- EntityNamespace: Publisher\Entry\ServiceId\Mode\ModeId\
+- EntityClass:     EntryIdModeId
 
 It is recommended to follow these conventions.
 In this way you can rely on the already implemented

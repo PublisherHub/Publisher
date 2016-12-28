@@ -17,8 +17,7 @@
         "publisher/facebook-entry": "Adds entries for posting on Facebook.",
         "publisher/twitter-entry": "Adds entries for posting on Twitter.",
         "publisher/xing-entry": "Adds entries for posting on XING.",
-        "publisher/recommendation": "Adds mode for publishing.",
-        "phpoauthlib/requestor": "An implementation of a RequestorFactory that uses lusitanian/oauth."
+        "publisher/recommendation": "Adds mode for publishing."
     },
     "autoload": {
         "psr-4": {

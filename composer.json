@@ -1,7 +1,7 @@
 {
     "name": "publisher/publisher",
     "description": "Library to publish multiple entries (all at once).",
-    "keywords": ["oauth", "publish", "post"],
+    "keywords": ["publisher", "publish", "post", "oauth"],
     "license": "MIT",
     "authors": [
         {
@@ -13,11 +13,14 @@
         "php": ">=7.0.0",
         "symfony/http-foundation": "^3.1"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7"
+    },
     "suggest": {
-        "publisher/facebook-entry": "Adds entries for posting on Facebook.",
-        "publisher/twitter-entry": "Adds entries for posting on Twitter.",
-        "publisher/xing-entry": "Adds entries for posting on XING.",
-        "publisher/recommendation": "Adds mode for publishing."
+        "publisher/entry_facebook": "Adds entries for posting on Facebook.",
+        "publisher/entry_twitter": "Adds entries for posting on Twitter.",
+        "publisher/entry_xing": "Adds entries for posting on XING.",
+        "publisher/mode_recommendation": "Adds mode for publishing."
     },
     "autoload": {
         "psr-4": {

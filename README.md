@@ -34,13 +34,12 @@ $ php composer.phar install
 ```
 
 # Suggestions
-!! repros will be published end of 2016 !!!
 - Entry
-    - publisher/facebook-entry -> adds entries for posting on Facebook
-    - publisher/twitter-entry -> adds entries for posting on Twitter
-    - publisher/xing-entry -> adds entries for posting on XING
+    - publisher/entry_facebook -> adds entries for posting on Facebook
+    - publisher/entry_twitter -> adds entries for posting on Twitter
+    - publisher/entry_xing -> adds entries for posting on XING
 - Mode
-    - publisher/recommendation -> adds mode for publishing
+    - publisher/mode_recommendation -> adds mode for publishing
 
 # Examples
 Examples of basic usage are located in the examples/ directory.
@@ -53,14 +52,6 @@ A Service (e.g. social network) called 'Foo' offers to post a status
 and to post in groups that the user is a member of.
 
 FooEntry:
-- Entity
-    - Mode
-        - Recommendation
-            - FooUserRecommendation.php
-            - FooGroupRecommendation.php
-        - SimpleMessage
-            - FooUserSimpleMessage.php
-            - FooGroupSimpleMessage.php
 - Selector
     - FooGroupSelector.php
 - FooUserEntry.php
@@ -69,22 +60,40 @@ FooEntry:
 Then we have a mode called 'Recommendation'.
 It provides the content generation
 
-Recommendation (!!!structure in progress, working on the validation part!!!):
-- AbstractRecommendation.php
-- Form (optional)
-    - Type
-        RecommendationType.php
-- Resources (optional)
-    - translations
+Recommendation
+- Resources
+    - config
+        - validation.yml
     - views
+        - recommendation.html.twig
+- src
+    - AbstractRecommendation.php
+    - Form
+        - Type
+            RecommendationType.php
 
 Modes should provide a Form and an base Entity for mapping and for validation.
 Entries that implement a Mode should implement the abstract entity given by the Mode.
-Please refer to the following repositories for examples:
-- !! repros will be published end of 2016 !!!
--
--
 
+FooRecommendation
+- Resources
+    - config
+        - validation.yml
+- src
+    - FooUserRecommendation.php
+    - FooGroupRecommendation.php
+
+### Please refer to the following repositories for examples:
+- Entry
+    - publisher/entry_facebook
+    - publisher/entry_twitter
+    - publisher/entry_xing
+- Mode
+    - publisher/mode_recommendation
+- Entity
+    - publisher/entity_facebook_recommendation
+    - publisher/entity_twitter_recommendation
+    - publisher/entity_xing_recommendation
 
 ## Naming Conventions
 

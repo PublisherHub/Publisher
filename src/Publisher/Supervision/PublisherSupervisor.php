@@ -24,7 +24,7 @@ class PublisherSupervisor implements
     /**
      * [1] service id [2] entry id
      */
-    const SELECTOR_PATTERN = '\\Publisher\\Entry\\%s\\Selector\\%sSelector';
+    const SELECTOR_DEFINITION_PATTERN = '\\Publisher\\Entry\\%s\\Selector\\%sSelectorDefinition';
     
     /**
      * [1] service id [2] mode id [3] entry id . mode id
@@ -41,10 +41,17 @@ class PublisherSupervisor implements
      */
     const NOT_FOUND_EXCEPTION_PATTERN = '\\Publisher\\%s\\Exception\\%sNotFoundException';
     
+    // @todo move configuration
     const SERVICE_PATTERN = '/^([A-Za-z]+)(User|Forum|Group|Page)$/';
     
+    /**
+     * @var array
+     */
     protected $config;
     
+    /**
+     * @param array $config
+     */
     public function __construct(array $config)
     {
         $this->config = $config;
@@ -221,12 +228,12 @@ class PublisherSupervisor implements
     /**
      * @{inheritdoc}
      */
-    public function getSelectorClass(string $entryId)
+    public function getSelectorDefinitionClass(string $entryId)
     {
         $service = $this->getServiceId($entryId);
-        $class = sprintf(self::SELECTOR_PATTERN, $service, $entryId);
+        $class = sprintf(self::SELECTOR_DEFINITION_PATTERN, $service, $entryId);
         
-        $this->checkClassExists($class, 'Selector');
+        $this->checkClassExists($class, 'Selector', 'SelectorDefinition');
         
         return $class;
     }
@@ -248,10 +255,25 @@ class PublisherSupervisor implements
         return $class;
     }
     
-    protected function checkClassExists(string $class, string $type)
-    {
+    /**
+     * 
+     * @param string      $class
+     * @param string      $type
+     * @param string|null $typeClassName should be set, if it differs from $type
+     * 
+     * @throws \Exception
+     */
+    protected function checkClassExists(
+        string $class,
+        string $type,
+        string $typeClassName = null
+    ) {
         if (!class_exists($class)) {
-            $exceptionClass = sprintf(self::NOT_FOUND_EXCEPTION_PATTERN, $type, $type);
+            $exceptionClass = sprintf(
+                self::NOT_FOUND_EXCEPTION_PATTERN,
+                $type,
+                $typeClassName ? $typeClassName : $type
+            );
             throw new $exceptionClass("Unknown $type: $class");
         }
     }

@@ -5,27 +5,40 @@ namespace Publisher\Selector\Factory;
 use Publisher\Selector\Factory\SelectorFactoryInterface;
 
 use Publisher\Requestor\RequestorFactoryInterface;
-use Publisher\Storage\StorageInterface;
-
-use Publisher\Selector\Exception\SelectorNotFoundException;
+use Publisher\Requestor\RequestorInterface;
+use Publisher\Selector\Exception\SelectorDefinitionNotFoundException;
 use Publisher\Helper\EntryHelperInterface;
-use Publisher\Selector\Parameter\NullSelector;
+use Publisher\Selector\NullSelector;
+use Publisher\Selector\SelectorInterface;
+use Publisher\Selector\Selector;
+use Publisher\Selector\Selection\SelectorDefinitionInterface;
+use Publisher\Selector\Selection\SelectionCollectionInterface;
+use Publisher\Selector\Selection\SelectionCollection;
 
 class SelectorFactory implements SelectorFactoryInterface
 {
     
+    /**
+     * @var EntryHelperInterface
+     */
     protected $entryHelper;
-    protected $requestorFactory;
-    protected $storage;
     
+    /**
+     *
+     * @var RequestorFactoryInterface
+     */
+    protected $requestorFactory;
+    
+    /**
+     * @param EntryHelperInterface $entryHelper
+     * @param RequestorFactoryInterface $requestorFactory
+     */
     public function __construct(
             EntryHelperInterface $entryHelper,
-            RequestorFactoryInterface $requestorFactory,
-            StorageInterface $storage
+            RequestorFactoryInterface $requestorFactory
     ) {
         $this->entryHelper = $entryHelper;
         $this->requestorFactory = $requestorFactory;
-        $this->storage = $storage;
     }
     
     /**
@@ -34,29 +47,77 @@ class SelectorFactory implements SelectorFactoryInterface
     public function create(string $entryId, array $additionalScopes = array())
     {
         try {
-            $class = $this->entryHelper->getSelectorClass($entryId);
+            $selectorDefinition = $this->getSelectorDefinition($entryId);
             
-            $serviceId = $this->entryHelper->getServiceId($entryId);
-            $scopes = array_merge(
-                    $additionalScopes,
-                    $this->entryHelper->getPublisherScopes($entryId)
-            );
-            $requestor = $this->requestorFactory->create(
-                    $serviceId,
-                    $scopes
-            );
-            
-            return new $class($requestor, $this->storage);
-            
-        } catch (SelectorNotFoundException $ex) {
+        } catch (SelectorDefinitionNotFoundException $ex) {
+            // It only makes sense to continue if the entry id is valid
             $this->entryHelper->checkIsEntryId($entryId);
-            
-            return $this->getDefaultParameterSelector();
+            /* If no SelectorDefinition is defined
+             * then then Entry doesn't require any Selector
+             */
+            return $this->getDefaultSelector();
         }
+        
+        $serviceId = $this->entryHelper->getServiceId($entryId);
+        $scopes = array_merge(
+            $additionalScopes,
+            $this->entryHelper->getPublisherScopes($entryId)
+        );
+        $requestor = $this->requestorFactory->create(
+            $serviceId,
+            $scopes
+        );
+        
+        $selectionCollection = $this->getSelectionCollection();
+        
+        return $this->createSelector(
+            $requestor,
+            $selectorDefinition,
+            $selectionCollection
+        );
     }
     
-    protected function getDefaultParameterSelector()
+    /**
+     * @param string $entryId
+     * 
+     * @return SelectorDefinitionInterface
+     */
+    protected function getSelectorDefinition(string $entryId)
+    {
+        $class = $this->entryHelper->getSelectorDefinitionClass($entryId);
+        
+        return new $class();
+    }
+    
+    /**
+     * @return SelectionCollectionInterface
+     */
+    protected function getSelectionCollection()
+    {
+        return new SelectionCollection();
+    }
+    
+    /**
+     * @return NullSelector
+     */
+    protected function getDefaultSelector()
     {
         return new NullSelector();
     }
+    
+    /**
+     * @param RequestorInterface $requestor
+     * @param SelectorDefinitionInterface $selectorDefinition
+     * @param SelectionCollectionInterface $selectionCollection
+     * 
+     * @return SelectorInterface
+     */
+    protected function createSelector(
+        RequestorInterface $requestor,
+        SelectorDefinitionInterface $selectorDefinition,
+        SelectionCollectionInterface $selectionCollection
+    ) {
+        return new Selector($requestor, $selectorDefinition, $selectionCollection);
+    }
+    
 }

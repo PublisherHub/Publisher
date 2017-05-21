@@ -8,7 +8,7 @@
         syntaxCheck="false"
 >
         <testsuites>
-            <testsuite name="Publisher Tests">
+            <testsuite name="PublisherTests">
                 <directory>tests</directory>
             </testsuite>
         </testsuites>

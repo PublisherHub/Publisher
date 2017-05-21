@@ -9,7 +9,7 @@ interface SelectorFactoryInterface
 {
     /**
      * @param string $entryId e.g. 'FacebookPage', 'FacebookUser'
-     * @param array $additionalScopes
+     * @param array $additionalScopes OAuth 2 scopes
      * 
      * @throws SelectorNotFoundException
      * 

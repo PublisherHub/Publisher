@@ -7,7 +7,7 @@ class Selection
     protected $name;
     protected $choices;
     
-    public function __construct($name, array $choices = array())
+    public function __construct($name, array $choices = array()) // @todo require choices or comment why it shouldn't be necessary
     {
         $this->name = $name;
         $this->choices = $choices;

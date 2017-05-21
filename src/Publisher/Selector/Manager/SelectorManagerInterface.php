@@ -23,7 +23,7 @@ interface SelectorManagerInterface
     public function areAllParametersSet();
     
     /**
-     * Update each selector with $choices['selector'].
+     * Update each selector with $choices['EntryrId'].
      * 
      * Example:
      * $choices = array(

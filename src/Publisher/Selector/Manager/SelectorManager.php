@@ -4,14 +4,25 @@ namespace Publisher\Selector\Manager;
 
 use Publisher\Selector\Manager\SelectorManagerInterface;
 use Publisher\Selector\Factory\SelectorFactoryInterface;
+use Publisher\Selector\SelectorInterface;
 use Publisher\Selector\Selection;
 
 class SelectorManager implements SelectorManagerInterface
 {
     
+    /**
+     * @var SelectorInterface[]
+     */
     protected $selectors;
+    
+    /**
+     * @var SelectorFactoryInterface
+     */
     protected $selectorFactory;
     
+    /**
+     * @param SelectorFactoryInterface $selectorFactory
+     */
     public function __construct(SelectorFactoryInterface $selectorFactory)
     {
         $this->selectorFactory = $selectorFactory;
@@ -22,7 +33,11 @@ class SelectorManager implements SelectorManagerInterface
      */
     public function setupSelectors(array $entryIds)
     {
-        $this->createSelectors($entryIds);
+        $this->selectors = array();
+        
+        foreach ($entryIds as $entryId) {
+            $this->selectors[$entryId] = $this->selectorFactory->getSelector($entryId);
+        }
     }
     
     /**
@@ -30,10 +45,8 @@ class SelectorManager implements SelectorManagerInterface
      */
     public function areAllParametersSet()
     {
-        $selectors = array_keys($this->selectors);
-        
-        foreach ($selectors as $entryId) {
-            if ($this->selectors[$entryId]->isParameterMissing()) {
+        foreach ($this->selectors as $selector) {
+            if ($selector->isParameterMissing()) {
                 return false;
             }
         }
@@ -44,17 +57,16 @@ class SelectorManager implements SelectorManagerInterface
     /**
      * @{inheritdoc}
      */
-    public function updateSelectors(array $choices)
+    public function updateSelectors(array $decisions)
     {
-        $selectors = array_keys($this->selectors);
-        foreach ($selectors as $entryId) {
-            if (isset($choices[$entryId]) && is_array($choices[$entryId])) {
-                $updateData = $choices[$entryId];
+        $entryIds = array_keys($this->selectors);
+        foreach ($this->selectors as $entryId => $selector) {
+            if (isset($decisions[$entryId]) && is_array($decisions[$entryId])) {
+                $updateData = $decisions[$entryId];
             } else {
                 $updateData = array();
             }
-            $this->selectors[$entryId]->updateParameters($updateData);
-            
+            $selector->updateParameters($updateData);
         }
     }
     
@@ -65,9 +77,8 @@ class SelectorManager implements SelectorManagerInterface
     {
         $selections = array();
         
-        $selectors = array_keys($this->selectors);
-        foreach ($selectors as $entryId) {
-            $selections[$entryId] = $this->selectors[$entryId]->getSelections();
+        foreach ($this->selectors as $entryId => $selector) {
+            $selections[$entryId] = $selector->getSelections();
         }
         
         return $selections;
@@ -76,7 +87,7 @@ class SelectorManager implements SelectorManagerInterface
     /**
      * @{inheritdoc}
      */
-    public function getSelectionsAsArray()
+    public function getSelectionsAsArray() // @todo move outside this class
     {
         $selections = $this->getSelections();
         $return = array();
@@ -94,20 +105,11 @@ class SelectorManager implements SelectorManagerInterface
     {
         $parameters = array();
         
-        $selectors = array_keys($this->selectors);
-        foreach ($selectors as $entryId) {
-            $parameters[$entryId] = $this->selectors[$entryId]->getParameters();
+        foreach ($this->selectors as $entryId => $selector) {
+            $parameters[$entryId] = $selector->getParameters();
         }
         
         return $parameters;
-    }
-    
-    protected function createSelectors(array $entryIds)
-    {
-        $this->selectors = array();
-        foreach ($entryIds as $entryId) {
-            $this->selectors[$entryId] = $this->selectorFactory->create($entryId);
-        }
     }
     
     protected function convertSelectionsToArray(array $selections)

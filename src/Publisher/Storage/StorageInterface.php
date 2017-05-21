@@ -2,6 +2,7 @@
 
 namespace Publisher\Storage;
 
+// @todo replace !!!
 interface StorageInterface
 {
     

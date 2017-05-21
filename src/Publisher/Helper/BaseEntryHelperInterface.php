@@ -27,14 +27,14 @@ interface BaseEntryHelperInterface
     public function getEntryClass(string $entryId);
     
     /**
-     * Returns the full class name of the Selector
+     * Returns the full class name of the SelectorDefinition
      * that belongs to an Entry with the ID $entryId.
      * 
      * @param string $entryId ID of an Entry
      * 
      * @return string
      */
-    public function getSelectorClass(string $entryId);
+    public function getSelectorDefinitionClass(string $entryId);
     
     /**
      * Returns the full class name of a Mode Entity.

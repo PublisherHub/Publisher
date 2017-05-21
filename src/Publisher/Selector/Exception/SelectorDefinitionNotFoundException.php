@@ -2,7 +2,7 @@
 
 namespace Publisher\Selector\Exception;
 
-class SelectorNotFoundException extends \Exception
+class SelectorDefinitionNotFoundException extends \Exception
 {
     
 }

@@ -8,8 +8,14 @@ use Publisher\Helper\BaseEntryHelperInterface;
 class EntryHelper implements EntryHelperInterface
 {
     
+    /**
+     * @var BaseEntryHelperInterface
+     */
     protected $baseHelper;
     
+    /**
+     * @param BaseEntryHelperInterface $baseHelper
+     */
     public function __construct(BaseEntryHelperInterface $baseHelper)
     {
         $this->baseHelper = $baseHelper;
@@ -44,9 +50,9 @@ class EntryHelper implements EntryHelperInterface
         return $this->baseHelper->getEntryClass($entryId);
     }
     
-    public function getSelectorClass(string $entryId)
+    public function getSelectorDefinitionClass(string $entryId)
     {
-        return $this->baseHelper->getSelectorClass($entryId);;
+        return $this->baseHelper->getSelectorDefinitionClass($entryId);;
     }
     
     public function getModeClass(string $modeId, string $entryId = 'Abstract')

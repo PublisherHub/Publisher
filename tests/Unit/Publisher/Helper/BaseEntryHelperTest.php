@@ -50,22 +50,22 @@ abstract class BaseEntryHelperTest extends \PHPUnit_Framework_TestCase
         );
     }
     
-    public function testGetSelectorClass()
+    public function testGetSelectorDefinitionClass()
     {
-        $selectorClass = '\\Publisher\\Entry\\Service\\Selector\\ServicePageSelector';
+        $selectorDefinitionClass = '\\Publisher\\Entry\\Service\\Selector\\ServicePageSelectorDefinition';
         
         $this->assertSame(
-                $selectorClass,
-                $this->entryHelper->getSelectorClass('ServicePage')
+                $selectorDefinitionClass,
+                $this->entryHelper->getSelectorDefinitionClass('ServicePage')
         );
     }
     
     /**
-     * @expectedException Publisher\Selector\Exception\SelectorNotFoundException
+     * @expectedException Publisher\Selector\Exception\SelectorDefinitionNotFoundException
      */
-    public function testSelectorNotFound()
+    public function testSelectorDefinitionNotFound()
     {
-        $selectorClass = $this->entryHelper->getSelectorClass('ServiceUser');
+        $selectorDefinitionClass = $this->entryHelper->getSelectorDefinitionClass('ServiceUser');
     }
     
     public function testGetModeClass()

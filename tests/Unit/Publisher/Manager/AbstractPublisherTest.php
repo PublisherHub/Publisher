@@ -2,23 +2,24 @@
 
 namespace Unit\Publisher\Manager;
 
+use PHPUnit\Framework\TestCase;
 use Publisher\Manager\Publisher;
 use Publisher\Supervision\PublisherSupervisor;
 use Publisher\Helper\EntryHelper;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
+use Publisher\Entry\Factory\EntryFactoryInterface;
+use Publisher\Requestor\RequestorFactoryInterface;
 use Publisher\Monitoring\Monitor;
 
-abstract class AbstractPublisherTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractPublisherTest extends TestCase
 {
     
     protected function getPublisher(array $entryData)
     {
         $publisher = new Publisher(
-                $this->getEntryHelper(),
-                $this->getEntryFactoryMock(),
-                $this->getRequestorFactoryMock(),
-                $this->getMonitor()
+            $this->getEntryHelper(),
+            $this->getEntryFactoryMock(),
+            $this->getRequestorFactoryMock(),
+            $this->getMonitor()
         );
         $publisher->setupEntries($entryData);
         
@@ -40,11 +41,11 @@ abstract class AbstractPublisherTest extends \PHPUnit_Framework_TestCase
         $publisher = $this->getPublisher($entryData);
         
         $expectedStatus = array('ServiceUser' => null);
-        $this->assertSame($expectedStatus, $publisher->getStatus());
-        $this->assertSame(false, $publisher->hasFinished());
+        $this->assertEquals($expectedStatus, $publisher->getStatus());
+        $this->assertFalse($publisher->hasFinished());
         
         $publisher->clearStatus();
-        $this->assertSame(array(), $publisher->getStatus());
+        $this->assertEquals(array(), $publisher->getStatus());
     }
     
     /**
@@ -56,12 +57,12 @@ abstract class AbstractPublisherTest extends \PHPUnit_Framework_TestCase
     
     protected function getEntryFactoryMock()
     {
-        return $this->getMock('\\Publisher\\Entry\\Factory\\EntryFactoryInterface');
+        return $this->getMockBuilder(EntryFactoryInterface::class)->getMock();
     }
     
     protected function getRequestorFactoryMock()
     {
-        return $this->getMock('\\Publisher\\Requestor\\RequestorFactoryInterface');
+        return $this->getMockBuilder(RequestorFactoryInterface::class)->getMock();
     }
     
     protected function getEntryHelper()
@@ -79,8 +80,7 @@ abstract class AbstractPublisherTest extends \PHPUnit_Framework_TestCase
     
     protected function getMonitor()
     {
-        $session = new Session(new MockArraySessionStorage());
-        return Monitor::getInstance($session);
+        return new Monitor();
     }
     
     /**

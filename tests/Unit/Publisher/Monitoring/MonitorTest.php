@@ -2,93 +2,72 @@
 
 namespace Unit\Publisher\Monitoring;
 
-use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
-use Symfony\Component\HttpFoundation\Session\Session;
+use PHPUnit\Framework\TestCase;
 use Publisher\Monitoring\Monitor;
 
-
-class MonitorTest extends \PHPUnit_Framework_TestCase
+class MonitorTest extends TestCase
 {
     
-    public function setUp()
+    public function testDefaults()
     {
-        $this->session = new Session(new MockArraySessionStorage());
-        $this->monitor = Monitor::getInstance($this->session);
+        $monitor = new Monitor();
+        $this->assertEquals([], $monitor->getStatus());
+        $this->assertTrue($monitor->finished());
     }
     
-    public function tearDown()
+    public function testInitialStatus()
     {
-        $this->monitor->clearStatus();
-    }
-    
-    public function testSingleton()
-    {
-        $this->assertSame($this->monitor, Monitor::getInstance($this->session));
-    }
-    
-    public function testConstructor()
-    {
-        $this->assertSame(array(), $this->monitor->getStatus());
-    }
-    
-    public function testMonitored()
-    {
-        $this->monitor->monitor('entryId');
-        $this->assertFalse($this->monitor->executed('entryId'));
-    }
-    
-    /**
-     * @dataProvider getExecutedEntries
-     */
-    public function testExecuted($entryId, $succeeded)
-    {
-        $this->monitor->monitor($entryId);
-        $this->monitor->setStatus($entryId, $succeeded);
-        $this->assertTrue($this->monitor->executed($entryId));
-    }
-    
-    public function getExecutedEntries()
-    {
-        return array(
-            array('entry1', true),
-            array('entry2', false)
-        );
+        $initialStatus = [
+            'ProviderPage' => null,
+            'ServiceUser' => true
+        ];
+        
+        $monitor = new Monitor($initialStatus);
+        $this->assertEquals($initialStatus, $monitor->getStatus());
     }
     
     /**
      * @expectedException \Publisher\Monitoring\Exception\UnregisteredEntryException
      */
-    public function testFailToCheckIfUnregisteredEntryWasExecuted()
+    public function testGetNoStatus()
     {
-        $wasExecuted = $this->monitor->executed('entry');
+        $monitor = new Monitor();
+        
+        $monitor->setStatus('NotRegistered', true);
     }
     
-    /**
-     * @expectedException \Publisher\Monitoring\Exception\UnregisteredEntryException
-     */
-    public function testFailToSetStatusForUnregisteredEntry()
+    public function testSetStatus()
     {
-        $this->monitor->setStatus('entry', true);
+        $monitor = new Monitor();
+        
+        $monitor->monitor('ProviderPage');
+        $monitor->monitor('ServiceUser');
+         $this->assertFalse($monitor->finished());
+        
+        $status = $monitor->getStatus();
+        $this->assertEquals([
+            'ProviderPage' => null,
+            'ServiceUser' => null
+        ], $status);
+        $this->assertFalse($monitor->executed('ProviderPage'));
+        $this->assertFalse($monitor->executed('ServiceUser'));
+        
+        
+        $monitor->setStatus('ProviderPage', true);
+        $this->assertFalse($monitor->finished());
+        $monitor->setStatus('ServiceUser', false);
+        $this->assertTrue($monitor->finished());
+        
+        $status = $monitor->getStatus();
+        $this->assertEquals([
+            'ProviderPage' => true,
+            'ServiceUser' => false
+        ], $status);
+        $this->assertTrue($monitor->executed('ProviderPage'));
+        $this->assertTrue($monitor->executed('ServiceUser'));
+        
+        $monitor->clearStatus();
+        $this->assertEquals([], $monitor->getStatus());
+        $this->assertTrue($monitor->finished());
     }
-    
-    public function testSetAndClearStatus()
-    {
-        $this->monitor->monitor('entry1');
-        $this->monitor->monitor('entry2');
-        $this->monitor->monitor('entry3');
-        
-        $this->monitor->setStatus('entry1', true);
-        $this->monitor->setStatus('entry2', false);
-        
-        $expectedStatus = array(
-            'entry1' => true,
-            'entry2' => false,
-            'entry3' => null
-        );
-        $this->assertSame($expectedStatus, $this->monitor->getStatus());
-        
-        $this->monitor->clearStatus();
-        $this->assertSame(array(), $this->monitor->getStatus());
-    }
-    
 }

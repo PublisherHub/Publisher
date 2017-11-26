@@ -2,13 +2,14 @@
 
 namespace Unit\Publisher\Selector;
 
+use PHPUnit\Framework\TestCase;
 use Publisher\Selector\Selector;
 use Publisher\Requestor\RequestorInterface;
 use Publisher\Selector\Selection\SelectorDefinition;
 use Publisher\Selector\Selection\SelectionCollection;
 use Publisher\Requestor\Request;
 
-class SelectorTest extends \PHPUnit_Framework_TestCase
+class SelectorTest extends TestCase
 {
     
     public function testIsParameterMissing()
@@ -51,7 +52,7 @@ class SelectorTest extends \PHPUnit_Framework_TestCase
         
         $this->assertEquals(
             $savedDecisions,
-            $selector->getSelectionCollection()->getDecisions()
+            $selector->getCollection()->getDecisions()
         );
     }
     

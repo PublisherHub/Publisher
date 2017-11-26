@@ -3,7 +3,6 @@
 namespace Publisher\Selector\Factory;
 
 use Publisher\Selector\Factory\SelectorFactoryInterface;
-
 use Publisher\Requestor\RequestorFactoryInterface;
 use Publisher\Requestor\RequestorInterface;
 use Publisher\Selector\Exception\SelectorDefinitionNotFoundException;
@@ -24,28 +23,44 @@ class SelectorFactory implements SelectorFactoryInterface
     protected $entryHelper;
     
     /**
-     *
      * @var RequestorFactoryInterface
      */
     protected $requestorFactory;
     
     /**
+     * Holds additional scopes per Entry (optional).
+     * 
+     * Example:
+     * $additionalScopes = [
+     *     'ServiceUser' => ['scope1', 'scope2', ...]
+     * ];
+     * 
+     * @var string array
+     */
+    protected $additionalScopes;
+    
+    /**
      * @param EntryHelperInterface $entryHelper
      * @param RequestorFactoryInterface $requestorFactory
+     * @param string[]                  $additionalScopes
      */
     public function __construct(
-            EntryHelperInterface $entryHelper,
-            RequestorFactoryInterface $requestorFactory
+        EntryHelperInterface $entryHelper,
+        RequestorFactoryInterface $requestorFactory,
+        array $additionalScopes = []
     ) {
         $this->entryHelper = $entryHelper;
         $this->requestorFactory = $requestorFactory;
+        $this->additionalScopes = $additionalScopes;
     }
     
     /**
      * @{inheritData}
      */
-    public function create(string $entryId, array $additionalScopes = array())
-    {
+    public function getSelector(
+        string $entryId,
+        SelectionCollectionInterface $selectionCollection = null
+    ) {
         try {
             $selectorDefinition = $this->getSelectorDefinition($entryId);
             
@@ -58,17 +73,14 @@ class SelectorFactory implements SelectorFactoryInterface
             return $this->getDefaultSelector();
         }
         
-        $serviceId = $this->entryHelper->getServiceId($entryId);
-        $scopes = array_merge(
-            $additionalScopes,
-            $this->entryHelper->getPublisherScopes($entryId)
-        );
         $requestor = $this->requestorFactory->create(
-            $serviceId,
-            $scopes
+            $this->entryHelper->getServiceId($entryId),
+            $this->getScopes($entryId)
         );
         
-        $selectionCollection = $this->getSelectionCollection();
+        if (!$selectionCollection) {
+            $selectionCollection = $this->getDefaultSelectionCollection();
+        }
         
         return $this->createSelector(
             $requestor,
@@ -90,19 +102,34 @@ class SelectorFactory implements SelectorFactoryInterface
     }
     
     /**
-     * @return SelectionCollectionInterface
-     */
-    protected function getSelectionCollection()
-    {
-        return new SelectionCollection();
-    }
-    
-    /**
      * @return NullSelector
      */
     protected function getDefaultSelector()
     {
         return new NullSelector();
+    }
+    
+    /**
+     * @param string $entryId
+     */
+    public function getScopes(string $entryId)
+    {
+        if (isset($this->additionalScopes[$entryId])) {
+            return array_merge(
+                $this->additionalScopes[$entryId],
+                $this->entryHelper->getPublisherScopes($entryId)
+            );
+        }
+        
+        return $this->entryHelper->getPublisherScopes($entryId);
+    }
+    
+    /**
+     * @return SelectionCollectionInterface
+     */
+    protected function getDefaultSelectionCollection()
+    {
+        return new SelectionCollection();
     }
     
     /**

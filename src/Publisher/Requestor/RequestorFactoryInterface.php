@@ -11,12 +11,12 @@ interface RequestorFactoryInterface
      * Creates an instance of RequestorInterface
      * based on a service name and optional scopes.
      * 
-     * @param string $serviceName e.g. 'Facebook', 'Google'
-     * @param array $scopes
+     * @param string   $serviceName e.g. 'Facebook', 'Google'
+     * @param string[] $scopes
      * 
      * @return RequestorInterface
      */
-    public function create(string $serviceName, array $scopes = array());
+    public function create(string $serviceName, array $scopes = []);
     
     /**
      * Creates an instance of RequestorInterface

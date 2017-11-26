@@ -6,28 +6,48 @@ use Publisher\Manager\PublishingManagerInterface;
 use Publisher\Helper\EntryHelperInterface;
 use Publisher\Entry\Factory\EntryFactoryInterface;
 use Publisher\Requestor\RequestorFactoryInterface;
-use Publisher\Monitoring\MonitoringInterface;
+use Publisher\Monitoring\MonitorInterface;
 use Publisher\Entry\EntryInterface;
 use Publisher\Requestor\RequestorInterface;
 
 class Publisher implements PublishingManagerInterface
 {
-    /** @var \Publisher\Helper\EntryHelperInterface */
+    /**
+     * @var EntryHelperInterface
+     */
     protected $entryHelper;
-    /** @var \Publisher\Entry\Factory\EntryFactoryInterface */
+    
+    /**
+     * @var EntryFactoryInterface
+     */
     protected $entryFactory;
-    /** @var \Publisher\Requestor\RequestorFactoryInterface */
+    
+    /**
+     * @var RequestorFactoryInterface
+     */
     protected $requestorFactory;
-    /** @var \Publisher\Monitoring\Monitor */
+    
+    /**
+     * @var Monitor
+     */
     protected $monitor;
-    /** @var array */
+    
+    /**
+     * @var array
+     */
     protected $entries;
     
+    /**
+     * @param EntryHelperInterface      $entryHelper
+     * @param EntryFactoryInterface     $entryFactory
+     * @param RequestorFactoryInterface $requestorFactory
+     * @param MonitorInterface          $monitor
+     */
     public function __construct(
         EntryHelperInterface $entryHelper,
         EntryFactoryInterface $entryFactory,
         RequestorFactoryInterface $requestorFactory,
-        MonitoringInterface $monitor
+        MonitorInterface $monitor
     ) {
         $this->entryHelper = $entryHelper;
         $this->entryFactory = $entryFactory;
@@ -127,8 +147,7 @@ class Publisher implements PublishingManagerInterface
             array $parameters,
             array $content
     ) {
-        $entry = $this->entryFactory->getEntry($entryId, $parameters);
-        $entry->setBody($content);
+        $entry = $this->entryFactory->getEntry($entryId, $parameters, $content);
         
         $response = $this->publish($entry);
             

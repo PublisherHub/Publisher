@@ -2,10 +2,11 @@
 
 namespace Unit\Publisher\Selector\Selection;
 
+use PHPUnit\Framework\TestCase;
 use Publisher\Selector\Selection\SelectionCollection;
 use Publisher\Selector\Selection;
 
-class SelectionCollectionTest extends \PHPUnit_Framework_TestCase
+class SelectionCollectionTest extends TestCase
 {
     
     public function testDefaultConstructor()

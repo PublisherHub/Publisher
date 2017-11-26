@@ -57,6 +57,7 @@ class Selector implements SelectorInterface
         
         $numberOfDecisions = count($decisionOrder);
         for ($i = 0; $i < $numberOfDecisions; $i++) {
+            
             $paramId = $decisionOrder[$i];
             if (isset($decisions[$paramId])) {
                 $this->selectionCollection->makeDecision(

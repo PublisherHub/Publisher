@@ -13,7 +13,7 @@
         "php": ">=7.0.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.7"
+        "phpunit/phpunit": "^6.4"
     },
     "suggest": {
         "publisher/entry_facebook": "Adds entries for posting on Facebook.",
@@ -25,7 +25,9 @@
         "psr-4": {
             "Publisher\\": "src/Publisher",
             "Unit\\": "tests/Unit",
+            "Integration\\": "tests/Integration",
             "Publisher\\Entry\\Service\\": "tests/Mock/Entry/Service",
+            "Publisher\\Entry\\Provider\\": "tests/Mock/Entry/Provider",
             "Publisher\\Mode\\Foo\\": "tests/Mock/Mode/Foo",
             "Publisher\\Entry\\Service\\Mode\\Foo\\": "tests/Mock/ServiceFooEntity/Foo"
         }

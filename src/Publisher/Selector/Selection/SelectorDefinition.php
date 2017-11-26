@@ -8,9 +8,9 @@ use Publisher\Selector\Selection;
 
 /**
  * A SelectorDefinition defines which steps or Request are necessary
- * to retrieve certain parameters that an entry requires to be published.
+ * to retrieve certain parameters that an Entry requires to be published.
  * 
- * A PageEntry may require a pageId and a special access token.
+ * A PageEntry may require a pageId and an additional access token.
  * To retrieve those parameters multiple requests may be necessary.
  * Those steps are defined chronological in the a specified SelectorDefinition.
  * 

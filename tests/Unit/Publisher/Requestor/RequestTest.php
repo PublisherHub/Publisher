@@ -2,9 +2,10 @@
 
 namespace Unit\Publisher\Requestor;
 
+use PHPUnit\Framework\TestCase;
 use Publisher\Requestor\Request;
 
-class RequestTest extends \PHPUnit_Framework_TestCase
+class RequestTest extends TestCase
 {
     
     public function testMinimalConstructor()

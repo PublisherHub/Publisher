@@ -2,12 +2,13 @@
 
 namespace Unit\Publisher\Helper;
 
+use PHPUnit\Framework\TestCase;
 use Publisher\Helper\Validator;
 use Publisher\Helper\Exception\LengthException;
 use Publisher\Helper\Exception\MissingRequiredParameterException;
 use Publisher\Helper\Exception\ValueException;
 
-class ValidatorTest extends \PHPUnit_Framework_TestCase
+class ValidatorTest extends TestCase
 {
     
     public function testValidMessageLength()
@@ -75,7 +76,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $exception = null;
         try {
             Validator::checkAnyRequiredParameter($given, $required);
-        } catch (MissingRequiredParameterException $ex) {}
+        } catch (MissingRequiredParameterException $exception) {}
         
         $this->assertNull($exception);
     }
@@ -116,7 +117,12 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $required = array('foo', 'bar');
         $given = array('foo' => '', 'bar' => null);
         
-        Validator::checkRequiredParameters($given, $required);
+        $exception = null;
+        try {
+            Validator::checkRequiredParameters($given, $required);
+        } catch (MissingRequiredParameterException $exception) {}
+        
+        $this->assertNull($exception);
     }
     
     /**
@@ -138,7 +144,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         try {
             $given = 'foo';
             Validator::validateValue($given, $allowed);
-        } catch (ValueException $ex) {}
+        } catch (ValueException $exception) {}
         
         $this->assertNull($exception);
     }

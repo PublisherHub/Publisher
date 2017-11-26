@@ -26,7 +26,7 @@ class ServiceUserEntry extends AbstractEntry
 
     public static function succeeded($response)
     {
-        
+        return isset($response->id);
     }
     
 }

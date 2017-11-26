@@ -35,7 +35,6 @@ interface SelectorInterface
      */
     public function updateParameters(array $decisions);
     
-    
     /**
      * Returns true if required parameters are missing
      * and false otherwise.

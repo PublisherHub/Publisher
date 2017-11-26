@@ -2,50 +2,28 @@
 
 namespace Publisher\Monitoring;
 
-use Publisher\Monitoring\MonitoringInterface;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\HttpFoundation\Session\Attribute\NamespacedAttributeBag;
+use Publisher\Monitoring\MonitorInterface;
 use Publisher\Monitoring\Exception\UnregisteredEntryException;
 
-class Monitor implements MonitoringInterface
-{
-    
-    private static $monitor;
-    private $session;
-    private $baseSessionKey;
-    private $sessionKey;
-    
-    public static function getInstance(
-            SessionInterface $session,
-            string $sessionKey = 'Monitor',
-            string $baseSessionKey = 'Publisher'
-    ) {
-        if (self::$monitor === null) {
-            self::$monitor = new Monitor($session, $sessionKey, $baseSessionKey);
-        }
-        
-        return self::$monitor;
-    }
-    
-    private function __construct(
-            SessionInterface $session,
-            string $sessionKey,
-            string $baseSessionKey
-    ) {
-        $this->session = $session;
-        $this->baseSessionKey = $baseSessionKey;
-        $this->sessionKey = $this->baseSessionKey.'/'.$sessionKey;
-        
-        $bag = new NamespacedAttributeBag();
-        $this->session->registerBag($bag);
-        
-        if (!$this->issetStatus()) {
-            $this->initStatus();
-        }
-    }
+class Monitor implements MonitorInterface
+{    
 
     /**
-     * @{inheritdoc}
+     * @var array
+     */
+    protected $status;
+
+    
+    /**
+     * @param array $initialStatus
+     */
+    public function __construct(array $initialStatus = [])
+    {
+        $this->initStatus($initialStatus);
+    }
+    
+    /**
+     * @inheritDoc
      */
     public function monitor(string $entryId)
     {
@@ -53,93 +31,117 @@ class Monitor implements MonitoringInterface
             $this->monitorEntry($entryId);
         }
     }
-    
+
     /**
-     * @{inheritdoc}
+     * @inheritDoc
      */
-    public function setStatus(string $entryId, bool $success = null)
+    public function setStatus(string $entryId, bool $success)
     {
         $this->checkEntryExists($entryId);
         
         $this->setEntryStatus($entryId, $success);
     }
-    
+
     /**
-     * @{inheritdoc}
+     * @inheritDoc
      */
     public function executed(string $entryId)
     {
         $this->checkEntryExists($entryId);
         
-        return ($this->getEntryStatus($entryId) !== null);
+        return ($this->status[$entryId] !== null);
     }
     
     /**
-     * @{inheritdoc}
+     * @inheritDoc
      */
     public function finished()
     {
-        $finished = true;
-        
         $status = $this->getStatus();
+        
         foreach ($status as $entryId => $success) {
-            $finished = $finished && ($success !== null);
+            if ($success === null) {
+                return false;
+            }
         }
         
-        return $finished;
+        return true;
+
     }
     
     /**
-     * @{inheritdoc}
+     * @inheritDoc
      */
     public function getStatus()
     {
-        return $this->session->get($this->sessionKey);
+        return $this->status;
     }
     
     /**
-     * @{inheritdoc}
+     * @inheritDoc
      */
     public function clearStatus()
     {
         $this->initStatus();
     }
     
-    private function issetStatus()
+    /**
+     * Initializes the status to prepare for a new monitoring.
+     * 
+     * @return void
+     */
+    protected function initStatus(array $initialStatus = [])
     {
-        return $this->session->has($this->sessionKey);
+        $this->status = $initialStatus;
     }
     
-    private function initStatus()
-    {
-        $this->session->set($this->sessionKey, array());
-    }
-    
-    private function issetEntry(string $entryId)
-    {
-        return $this->session->has($this->sessionKey.'/'.$entryId);
-    }
-    
-    private function monitorEntry(string $entryId)
+    /**
+     * Registers the Entry with the id of $entryId for the current monitoring.
+     * 
+     * @param string $entryId
+     */
+    protected function monitorEntry(string $entryId)
     {
         $this->setEntryStatus($entryId, null);
     }
     
-    private function checkEntryExists($entryId)
+    /**
+     * Sets the status fo a registered Entry.
+     * 
+     * @param string $entryId
+     * 
+     * @param bool|null $status
+     */
+    protected function setEntryStatus(string $entryId, bool $status = null)
+    {
+        $this->status[$entryId] = $status;
+    }
+    
+    /**
+     * Verifies that an Entry with the id $entryId is currently monitored.
+     * Throws an Exception if it is not registered.
+     * 
+     * @param string $entryId
+     * 
+     * @throws UnregisteredEntryException
+     */
+    protected function checkEntryExists(string $entryId)
     {
         if (!$this->issetEntry($entryId)) {
             throw new UnregisteredEntryException("$entryId is not registered.");
         }
     }
     
-    private function setEntryStatus(string $entryId, $status)
+    /**
+     * Returns true if an Entry with the id $entryId is already registered.
+     * 
+     * @param string $entryId
+     * 
+     * @return bool
+     */
+    protected function issetEntry(string $entryId)
     {
-        $this->session->set($this->sessionKey.'/'.$entryId, $status);
+        return array_key_exists($entryId, $this->status);
     }
-    
-    private function getEntryStatus(string $entryId)
-    {
-        return $this->session->get($this->sessionKey.'/'.$entryId);
-    }
-    
+
 }

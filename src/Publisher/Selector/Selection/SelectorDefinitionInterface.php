@@ -21,9 +21,11 @@ interface SelectorDefinitionInterface
     /**
      * Returns whether or not the required parameters are missing.
      * 
+     * @param string[] $decisions
+     * 
      * @return bool
      */
-    public function isDecisionMissing();
+    public function isDecisionMissing(array $decisions);
     
     /**
      * Returns the Request that is definded for the step refered by

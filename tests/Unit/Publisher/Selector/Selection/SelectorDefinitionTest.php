@@ -2,6 +2,7 @@
 
 namespace Unit\Publisher\Selector\Selection;
 
+use PHPUnit\Framework\TestCase;
 use Publisher\Entry\Service\Selector\ServicePageSelectorDefinition;
 use Publisher\Selector\Selection\SelectionCollection;
 use Publisher\Requestor\Request;
@@ -12,7 +13,7 @@ use Publisher\Requestor\Request;
  * with the Mock Class
  * Publisher\Entry\Service\Selection\ServicePageSelectorDefinition.
  */
-class SelectorDefinitionTest extends \PHPUnit_Framework_TestCase
+class SelectorDefinitionTest extends TestCase
 {
     
     public function testGetRequest()

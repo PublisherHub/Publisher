@@ -2,10 +2,11 @@
 
 namespace Unit\Publisher\Mode;
 
+use PHPUnit\Framework\TestCase;
 use Publisher\Mode\ContentTransformer;
 use Publisher\Supervision\PublisherSupervisor;
 
-class ContentTransformerTest extends \PHPunit_Framework_TestCase
+class ContentTransformerTest extends TestCase
 {
     
     public function setUp()

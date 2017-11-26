@@ -2,11 +2,12 @@
 
 namespace Unit\Publisher\Selector;
 
+use PHPUnit\Framework\TestCase;
 use Publisher\Selector\NullSelector;
 use Publisher\Selector\Selection\SelectionCollectionInterface;
 use Publisher\Selector\SelectorInterface;
 
-class NullSelectorTest extends \PHPUnit_Framework_TestCase
+class NullSelectorTest extends TestCase
 {
     
     public function testBehaviour()

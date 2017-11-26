@@ -2,9 +2,9 @@
 
 namespace Unit\Publisher\Manager;
 
-use Unit\Publisher\Manager\AbstractPublisherTest as BaseTest;
+use Unit\Publisher\Manager\AbstractPublisherTest;
 
-class PublisherTest extends BaseTest
+class PublisherTest extends AbstractPublisherTest
 {
     
     public function getTestContent()

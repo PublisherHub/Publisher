@@ -2,7 +2,9 @@
 
 namespace Publisher\Monitoring;
 
-interface MonitoringInterface
+use Publisher\Monitoring\Exception\UnregisteredEntryException;
+
+interface MonitorInterface
 {
     
     /**
@@ -20,7 +22,7 @@ interface MonitoringInterface
      * @param string $entryId
      * @param bool $success
      * 
-     * @throws \Publisher\Monitoring\Exception\UnregisteredEntryException
+     * @throws UnregisteredEntryException
      * 
      * @return void
      */
@@ -28,18 +30,18 @@ interface MonitoringInterface
     
     /**
      * Returns whether or not the entry was executed and therefore got a result.
-     * Returns true if the entry got a result (result !== null).
+     * Returns true if the entry got a status unlike null.
      * 
      * @param type $entryId
      * 
-     * @throws \Publisher\Monitoring\Exception\UnregisteredEntryException
+     * @throws UnregisteredEntryException
      * 
      * @return bool
      */
     public function executed(string $entryId);
     
     /**
-     * Returns true if every request was executed.
+     * Returns true if each registred Entry has a saved status unlike null.
      * 
      * @return bool
      */
@@ -47,15 +49,20 @@ interface MonitoringInterface
     
     /**
      * Returns the outcome for each entry.
-     * array('entry1' => true, 'entry2' => false, ...)
+     * 
+     * If the status is null then the Entry is only registered.
+     * A value of true or false marks the success or failure of e.g. a request.
+     * 
+     * Example:
+     * ['entry1' => true, 'entry2' => false, 'entry3' => null, ...]
      * 
      * @return array
      */
     public function getStatus();
     
     /**
-     * Resets the status for each entry
-     * or deletes the status completely.
+     * Resets the status completely.
+     * It'll be possible to start a new monitoring after that.
      * 
      * @return void
      */

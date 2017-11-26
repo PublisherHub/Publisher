@@ -2,9 +2,10 @@
 
 namespace Unit\Publisher\Supervision;
 
+use PHPUnit\Framework\TestCase;
 use Publisher\Supervision\PublisherSupervisor;
 
-class PublisherSupervisorCheckConfigTest extends \PHPUnit_Framework_TestCase
+class PublisherSupervisorCheckConfigTest extends TestCase
 {
     
     public function testAllFound()
@@ -33,7 +34,7 @@ class PublisherSupervisorCheckConfigTest extends \PHPUnit_Framework_TestCase
     {
         $config = array(
             'entries' => array(
-                'Service' => array('Forum') // ServiceForumEntry doesn't exists
+                'Service' => array('Group') // ServiceGroupEntry doesn't exists
             ),
             'modes' => array(
                 'Text' // the AbstractEntryModeEntity AbstractText doesn't exists
@@ -42,10 +43,10 @@ class PublisherSupervisorCheckConfigTest extends \PHPUnit_Framework_TestCase
         );
         
         $notFound = array(
-            'entries' => array('\\Publisher\\Entry\\Service\\ServiceForumEntry'),
+            'entries' => array('\\Publisher\\Entry\\Service\\ServiceGroupEntry'),
             'modes' => array('\\Publisher\\Mode\\Text\\AbstractText'),
             'entities' => array(
-                '\\Publisher\\Entry\\Service\\Mode\\Text\\ServiceForumText'
+                '\\Publisher\\Entry\\Service\\Mode\\Text\\ServiceGroupText'
             )
         );
         

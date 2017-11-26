@@ -9,6 +9,9 @@ use Publisher\Requestor\Request;
 class ServicePageSelectorDefinition extends SelectorDefinition
 {
 
+    /**
+     * @inheritDoc
+     */
     protected function defineSteps()
     {
         $this->steps[0] = function () {
@@ -19,21 +22,33 @@ class ServicePageSelectorDefinition extends SelectorDefinition
         };
     }
     
+    /**
+     * @inheritDoc
+     */
     protected function defineDecisionOrder()
     {
         $this->decisionOrder = [];
     }
     
+    /**
+     * @inheritDoc
+     */
     public function getRequiredParameters(array $decisions)
     {
         return [];
     }
 
-    public function isDecisionMissing()
+    /**
+     * @inheritDoc
+     */
+    public function isDecisionMissing(array $decisions)
     {
         return false;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function updateDecisions(SelectionCollectionInterface $selectionCollection, string $response)
     {
         

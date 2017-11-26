@@ -2,9 +2,10 @@
 
 namespace Unit\Publisher\Entry;
 
+use PHPUnit\Framework\TestCase;
 use Publisher\Entry\EntryInterface;
 
-abstract class EntryTest extends \PHPUnit_Framework_TestCase
+abstract class EntryTest extends TestCase
 {
     /**
      * @param array $body

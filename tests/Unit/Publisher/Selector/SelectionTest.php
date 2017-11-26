@@ -2,9 +2,10 @@
 
 namespace Unit\Publisher\Selector;
 
+use PHPUnit\Framework\TestCase;
 use Publisher\Selector\Selection;
 
-class SelectionTest extends \PHPUnit_Framework_TestCase
+class SelectionTest extends TestCase
 {
     
     public function testConstructor()

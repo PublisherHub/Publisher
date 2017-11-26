@@ -2,7 +2,9 @@
 
 namespace Unit\Publisher\Helper;
 
-abstract class BaseEntryHelperTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+abstract class BaseEntryHelperTest extends TestCase
 {
     
     protected $config;

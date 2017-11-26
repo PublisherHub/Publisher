@@ -48,7 +48,10 @@ class SelectionCollection implements SelectionCollectionInterface
     public function makeDecision(string $paramId, string $decision)
     {
         if ($this->hasDecided($paramId) && $this->changedHisMind($paramId, $decision)) {
-            $this->resetFollowingDecisions($this->getStepIdOfParamId($paramId));
+            $stepId = $this->getStepIdOfParamId($paramId);
+            if ($stepId !== false) {
+                $this->resetFollowingDecisions($stepId);
+            }
         }
         $this->decisions[$paramId] = $decision;
         $this->markNextStep();
@@ -97,17 +100,20 @@ class SelectionCollection implements SelectionCollectionInterface
         return $this->decisions[$key] !== $decision;
     }
     
-    
+    /**
+     * Resets all decisions and selections
+     * that'll occur after the step $stepId.
+     * 
+     * @param int $stepId
+     */
     protected function resetFollowingDecisions(int $stepId)
     {
-        if ($stepId !== false) {
-            for ($i = count($this->selections) - 1; $i > $stepId; $i--) {
-                $selectionName = $this->selections[$i]->getName();
-                unset($this->selections[$i]);
-                unset($this->decisions[$selectionName]);
-            }
-            $this->stepId = $stepId;
+        for ($i = count($this->selections) - 1; $i > $stepId; $i--) {
+            $selectionName = $this->selections[$i]->getName();
+            unset($this->selections[$i]);
+            unset($this->decisions[$selectionName]);
         }
+        $this->stepId = $stepId;
     }
     
     /**

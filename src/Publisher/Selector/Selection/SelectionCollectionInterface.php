@@ -2,6 +2,9 @@
 
 namespace Publisher\Selector\Selection;
 
+/**
+ * A SelectionCollection manages the state for a group of Selections.
+ */
 interface SelectionCollectionInterface
 {
     
@@ -21,8 +24,10 @@ interface SelectionCollectionInterface
      * if a decision was saved before AND but changed
      * for the parameter with the id $key.
      * 
+     * @internal should increase the value that you get by calling getCurrentStepId
+     * 
      * @param string $paramId  an id that refers to a parameter
-     * @param string $decision 
+     * @param string $decision
      * 
      * @return void
      */

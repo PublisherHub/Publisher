@@ -2,9 +2,10 @@
 
 namespace Unit\Publisher\Selector\Exception;
 
+use PHPUnit\Framework\TestCase;
 use Publisher\Selector\Exception\ChoiceChangedException;
 
-class ChoiceChangedExceptionTest extends \PHPUnit_Framework_TestCase
+class ChoiceChangedExceptionTest extends TestCase
 {
     
     public function testSetStep()

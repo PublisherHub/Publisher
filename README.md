@@ -3,6 +3,8 @@ Publish / post via OAuth1 and OAuth2 services.
 
 Publisher offers classes and interfaces that allow you to post several entries at once.
 
+You can find the documentation in the docs folder.
+
 # Main components
 - Entry
     - EntryInterface and AbstractEntry as an abstraction of entries in a social network

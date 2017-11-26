@@ -2,18 +2,51 @@
 
 namespace Publisher\Selector\Manager;
 
+use Publisher\Selector\Selection\SelectionCollectionInterface;
+
 interface SelectorManagerInterface
 {
     
     /**
-     * Creates a selector for each $entryIds
-     * that will be used afterwards.
+     * Creates a Selector for each $entryIds that will be used afterwards
+     * and initializes the Selectors SelectionCollections
+     * based on the data given in $collectionsData.
      * 
-     * @param array $entryIds
+     * The given $collectionsData should be compatible
+     * with the output of the method 'getCollectionsAsArray'.
+     * 
+     * Example:
+     * $entryIds = ['ServiceUser', 'ProviderPage'];
+     * $collectionsData = [
+     *     'ProviderPage' => $selectionCollectionAsArray
+     * ];
+     * 
+     * @param string[]                       $entryIds
+     * @param SelectionCollectionInterface[] $collectionsData
      * 
      * @return void
      */
-    public function setupSelectors(array $entryIds);
+    public function setupSelectors(array $entryIds, array $collectionsData);
+    
+    /**
+     * Update each selector with $choices['EntryrId'].
+     * 
+     * Example:
+     * $choices = [
+     *  'ServiceUser' => [], // e.g. no choices for ServiceUserEntry
+     *  'ServicePage' => [
+     *      ['firstSelection' => '1', 'secondSelection' => 'b')
+     *  ],
+     *  'ServiceGroup' => [
+     *      ['firstSelection' => 'f')
+     *  ]
+     * ];
+     * 
+     * @param array $choices
+     * 
+     * @return void
+     */
+    public function updateSelectors(array $choices);
     
     /**
      * Returns whether or not the selectors collected all required parameters. 
@@ -23,71 +56,54 @@ interface SelectorManagerInterface
     public function areAllParametersSet();
     
     /**
-     * Update each selector with $choices['EntryrId'].
-     * 
-     * Example:
-     * $choices = array(
-     *  'ServiceUser' => array(), // e.g. no choices for ServiceUserEntry
-     *  'ServicePage' => array(
-     *      array('firstSelection' => '1', 'secondSelection' => 'b')
-     *  ),
-     *  'ServiceGroup' => array(
-     *      array('firstSelection' => 'f')
-     *  )
-     * );
-     * 
-     * @param array $choices
+     * Executes the current requests for each selector.
      * 
      * @return void
      */
-    public function updateSelectors(array $choices);
+    public function executeCurrentSteps();
     
     /**
-     * Returns the current selections of each selector.
+     * Returns the current SelectionCollections for each selector.
      * 
      * Example:
-     * $selections = array(
-     *  'ServiceUser' => array(), // e.g. no selections for ServiceUserEntry
-     *  'ServicePage' => array($firstSelection1, $secondSelection),
-     *  'ServiceGroup' => array($firstSelection1)
-     * );
-     * 
-     * @return array contains arrays of instances of \Publisher\Selector\Selection
-     */
-    public function getSelections();
-    
-    /**
-     * Returns the current selections of each selector.
-     * 
-     * Example:
-     * $selections = array(
-     *  'ServiceUser' => array(), // e.g. no selections for ServiceUserEntry
-     *  'ServicePage' => array(
-     *      array('firstSelection' => array('1'=>'a','2'=>'b'),
-     *      array('secondSelection' => array('a'=>'1','b'=>'2')
-     *  ),
-     *  'ServiceGroup' => array(
-     *      array('firstSelection' => array('f'=>'foo','b'=>'bar')
-     *  )
-     * );
+     * $collections = [
+     *  'ServicePage' => $servicePageSelectionCollection,
+     *  'ServiceGroup' => $serviceGroupSelectionCollection
+     * ];
      * 
      * @return array
      */
-    public function getSelectionsAsArray();
+    public function getCollections();
+    
+    /**
+     * Returns the current SelectionCollections as data arrays for each selector.
+     * The output should be compatible with the second argument
+     * of the method 'setupSelectors'.
+     * 
+     * Example:
+     * $collections = [
+     *  'ServicePage' => $servicePageSelectionCollectionAsArray,
+     *  'ServiceGroup' => $serviceGroupSelectionCollectionAsArray
+     * ];
+     * 
+     * @return array
+     * @return array
+     */
+    public function getCollectionsAsArray();
     
     /**
      * Returns the parameters of all selectors.
      * 
      * Example:
-     * $parameters = array(
-     *  'ServiceUser' => array(), // no parameters for ServiceUserEntry
-     *  'ServicePage' => array(
+     * $parameters = [
+     *  'ServiceUser' => [], // no parameters for ServiceUserEntry
+     *  'ServicePage' => [
      *      'firstParameter' => '1', 'secondParameter' => 'b'
-     *  ),
-     *  'ServiceGroup' => array(
+     *  ],
+     *  'ServiceGroup' => [
      *      'firstParameter' => 'f'
-     *  )
-     * );
+     *  ]
+     * ];
      * 
      * @return array
      */

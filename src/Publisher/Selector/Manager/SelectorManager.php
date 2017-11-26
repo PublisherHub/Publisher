@@ -5,7 +5,7 @@ namespace Publisher\Selector\Manager;
 use Publisher\Selector\Manager\SelectorManagerInterface;
 use Publisher\Selector\Factory\SelectorFactoryInterface;
 use Publisher\Selector\SelectorInterface;
-use Publisher\Selector\Selection;
+use Publisher\Selector\Factory\SelectionCollectionArrayTransformerInterface;
 
 class SelectorManager implements SelectorManagerInterface
 {
@@ -21,27 +21,54 @@ class SelectorManager implements SelectorManagerInterface
     protected $selectorFactory;
     
     /**
-     * @param SelectorFactoryInterface $selectorFactory
+     * @var SelectionCollectionArrayTransformerInterface
      */
-    public function __construct(SelectorFactoryInterface $selectorFactory)
-    {
+    protected $collectionTransformer;
+    
+        
+    /**
+     * @param SelectorFactoryInterface $selectorFactory
+     * @param SelectionCollectionArrayTransformerInterface $collectionTransformer
+     */
+    public function __construct(
+        SelectorFactoryInterface $selectorFactory,
+        SelectionCollectionArrayTransformerInterface $collectionTransformer
+    ) {
+        $this->selectors = [];
         $this->selectorFactory = $selectorFactory;
+        $this->collectionTransformer = $collectionTransformer;
     }
     
     /**
-     * @{inheritdoc}
+     * @inheritDoc
      */
-    public function setupSelectors(array $entryIds)
+    public function setupSelectors(array $entryIds, array $collectionsData = [])
     {
-        $this->selectors = array();
+        $this->selectors = [];
         
         foreach ($entryIds as $entryId) {
-            $this->selectors[$entryId] = $this->selectorFactory->getSelector($entryId);
+            $selectionCollection = $this->collectionTransformer->getSelectionCollectionFromArray(
+                isset($collectionsData[$entryId]) ? $collectionsData[$entryId] : []
+            );
+            $this->selectors[$entryId] = $this->selectorFactory->getSelector($entryId, $selectionCollection);
         }
     }
     
     /**
-     * @{inheritdoc}
+     * @inheritDoc
+     */
+    public function updateSelectors(array $decisions)
+    {
+        foreach ($this->selectors as $entryId => $selector) {
+            
+            if (isset($decisions[$entryId]) && is_array($decisions[$entryId])) {
+                $selector->updateParameters($decisions[$entryId]);
+            }
+        }
+    }
+    
+    /**
+     * @inheritDoc
      */
     public function areAllParametersSet()
     {
@@ -55,80 +82,55 @@ class SelectorManager implements SelectorManagerInterface
     }
     
     /**
-     * @{inheritdoc}
+     * @inheritDoc
      */
-    public function updateSelectors(array $decisions)
+    public function executeCurrentSteps()
     {
-        $entryIds = array_keys($this->selectors);
-        foreach ($this->selectors as $entryId => $selector) {
-            if (isset($decisions[$entryId]) && is_array($decisions[$entryId])) {
-                $updateData = $decisions[$entryId];
-            } else {
-                $updateData = array();
-            }
-            $selector->updateParameters($updateData);
+        foreach ($this->selectors as $selector) {
+            $selector->executeCurrentStep();
         }
     }
     
     /**
-     * @{inheritdoc}
+     * @inheritDoc
      */
-    public function getSelections()
+    public function getCollections()
     {
-        $selections = array();
+        $selections = [];
         
         foreach ($this->selectors as $entryId => $selector) {
-            $selections[$entryId] = $selector->getSelections();
+            $selections[$entryId] = $selector->getCollection();
         }
         
         return $selections;
     }
     
     /**
-     * @{inheritdoc}
+     * @inheritDoc
      */
-    public function getSelectionsAsArray() // @todo move outside this class
+    public function getCollectionsAsArray()
     {
-        $selections = $this->getSelections();
-        $return = array();
-        foreach ($selections as $entryId => $selections) {
-            $return[$entryId] = $this->convertSelectionsToArray($selections);
+        $selections = [];
+        
+        foreach ($this->selectors as $entryId => $selector) {
+            $selections[$entryId] = $this->collectionTransformer->getSelectionCollectionAsArray($selector->getCollection());
         }
         
-        return $return;
+        return $selections;
     }
     
     /**
-     * @{inheritdoc}
+     * @inheritDoc
      */
     public function getParameters()
     {
-        $parameters = array();
+        $parameters = [];
         
         foreach ($this->selectors as $entryId => $selector) {
             $parameters[$entryId] = $selector->getParameters();
         }
         
         return $parameters;
-    }
-    
-    protected function convertSelectionsToArray(array $selections)
-    {
-        $return = array();
-        
-        for ($i = 0; $i < count($selections); $i++) {
-            $return[$i] = $this-> convertSelectionToArray($selections[$i]);
-        }
-        
-        return $return;
-    }
-    
-    protected function convertSelectionToArray(Selection $selection)
-    {
-        return array(
-            'name' => $selection->getName(),
-            'choices' => $selection->getChoices()
-        );
     }
     
 }

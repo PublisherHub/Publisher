@@ -31,6 +31,11 @@ class PublisherSupervisorTest extends BaseEntryHelperTest
         $this->assertEquals($entryIds, $this->supervisor->getEntryIds($service));
     }
     
+    public function testGetNoEntryIds()
+    {
+        $this->assertEquals([], $this->supervisor->getEntryIds('NotExistingService'));
+    }
+    
     public function getServiceWithEntryIds()
     {
         return array(
